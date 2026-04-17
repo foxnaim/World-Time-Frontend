@@ -12,11 +12,10 @@ const inter = Inter({
 });
 
 const fraunces = Fraunces({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600'],
   variable: '--font-fraunces',
   display: 'swap',
-  axes: ['opsz'],
 });
 
 export const metadata: Metadata = {
