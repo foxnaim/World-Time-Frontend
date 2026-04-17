@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192" role="img" aria-label="WorkTime">
+  <rect width="192" height="192" rx="32" fill="#EAE7DC"/>
+  <g transform="translate(96 96)">
+    <circle r="72" fill="none" stroke="#E85A4F" stroke-width="6" stroke-linecap="round" stroke-dasharray="339 113" transform="rotate(-90)"/>
+    <circle r="4" fill="#E85A4F"/>
+  </g>
+  <text
+    x="96"
+    y="96"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="'Fraunces', 'Times New Roman', serif"
+    font-weight="600"
+    font-size="78"
+    fill="#2F2A26"
+    letter-spacing="-2"
+  >W</text>
+</svg>

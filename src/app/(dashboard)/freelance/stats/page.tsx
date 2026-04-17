@@ -1,0 +1,348 @@
+'use client';
+
+import * as React from 'react';
+import useSWR from 'swr';
+import { Card } from '@worktime/ui';
+import { fetcher } from '@/lib/fetcher';
+
+interface Project {
+  id: string;
+  name: string;
+  hourlyRate?: number | null;
+  fixedPrice?: number | null;
+  status: string;
+}
+
+interface MonthlySummary {
+  projectId: string;
+  totalSeconds: number;
+  realHourlyRate?: number | null;
+  declaredRate?: number | null;
+  insight: string;
+}
+
+interface RealRate {
+  effectiveRate: number;
+  totalSeconds: number;
+  totalIncome: number;
+  periodStart?: string;
+  periodEnd?: string;
+}
+
+const MONTH_LABELS = [
+  'янв', 'фев', 'мар', 'апр', 'май', 'июн',
+  'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
+];
+
+interface MonthSlot {
+  key: string;
+  label: string;
+}
+
+function lastSixMonths(): MonthSlot[] {
+  const out: MonthSlot[] = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    out.push({ key, label: MONTH_LABELS[d.getMonth()] });
+  }
+  return out;
+}
+
+/**
+ * Batch fetches user real-hourly-rate for the last 6 months by rendering
+ * a fixed set of invisible fetcher components. Each child runs exactly
+ * one `useSWR` call → hook order stays stable across renders.
+ */
+function MonthRateFetcher({
+  monthKey,
+  onData,
+}: {
+  monthKey: string;
+  onData: (key: string, data: RealRate | undefined) => void;
+}) {
+  const { data } = useSWR<RealRate>(
+    `/api/analytics/user/real-hourly-rate?month=${monthKey}`,
+    fetcher,
+  );
+  React.useEffect(() => {
+    onData(monthKey, data);
+  }, [monthKey, data, onData]);
+  return null;
+}
+
+function ProjectMonthFetcher({
+  projectId,
+  monthKey,
+  onData,
+}: {
+  projectId: string;
+  monthKey: string;
+  onData: (projectId: string, key: string, data: MonthlySummary | undefined) => void;
+}) {
+  const { data } = useSWR<MonthlySummary>(
+    `/api/projects/${projectId}/monthly-summary?month=${monthKey}`,
+    fetcher,
+  );
+  React.useEffect(() => {
+    onData(projectId, monthKey, data);
+  }, [projectId, monthKey, data, onData]);
+  return null;
+}
+
+export default function StatsPage() {
+  const months = React.useMemo<MonthSlot[]>(() => lastSixMonths(), []);
+  const [rates, setRates] = React.useState<Record<string, RealRate | undefined>>({});
+  const onRate = React.useCallback((key: string, data: RealRate | undefined) => {
+    setRates((prev) => (prev[key] === data ? prev : { ...prev, [key]: data }));
+  }, []);
+
+  const { data: projects } = useSWR<Project[]>('/api/projects', fetcher);
+  const projectList = Array.isArray(projects)
+    ? projects.filter((p) => p.status !== 'ARCHIVED')
+    : [];
+
+  const hoursByMonth = months.map((m) => {
+    const r = rates[m.key];
+    return {
+      key: m.key,
+      label: m.label,
+      hours: (r?.totalSeconds ?? 0) / 3600,
+      rate: r?.effectiveRate ?? 0,
+    };
+  });
+  const maxHours = Math.max(1, ...hoursByMonth.map((h) => h.hours));
+  const maxRate = Math.max(1, ...hoursByMonth.map((h) => h.rate));
+
+  return (
+    <div className="flex flex-col gap-10 py-8 md:py-12">
+      {months.map((m) => (
+        <MonthRateFetcher key={m.key} monthKey={m.key} onData={onRate} />
+      ))}
+
+      <header>
+        <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">
+          Фриланс
+        </span>
+        <h1
+          className="mt-2 text-4xl font-medium tracking-editorial text-stone md:text-5xl"
+          style={{ fontFamily: 'Fraunces, serif' }}
+        >
+          Статистика
+        </h1>
+      </header>
+
+      <Card title="Часов по месяцам" eyebrow="Последние 6 месяцев">
+        <BarChart
+          data={hoursByMonth.map((h) => ({
+            label: h.label,
+            value: h.hours,
+            display: h.hours.toFixed(1),
+          }))}
+          max={maxHours}
+          color="#E98074"
+        />
+      </Card>
+
+      <Card title="Реальная ставка по месяцам" eyebrow="₽/час">
+        <BarChart
+          data={hoursByMonth.map((h) => ({
+            label: h.label,
+            value: h.rate,
+            display:
+              h.rate > 0 ? Math.round(h.rate).toLocaleString('ru-RU') : '—',
+          }))}
+          max={maxRate}
+          color="#8E8D8A"
+        />
+      </Card>
+
+      <section>
+        <h2
+          className="mb-4 text-2xl font-medium tracking-editorial text-stone md:text-3xl"
+          style={{ fontFamily: 'Fraunces, serif' }}
+        >
+          Реальная ставка по проектам
+        </h2>
+        {projectList.length === 0 ? (
+          <Card className="py-12 text-center text-sm text-stone/70">
+            Нет активных проектов.
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            {projectList.map((p) => (
+              <ProjectRateHistory key={p.id} project={p} months={months} />
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function ProjectRateHistory({
+  project,
+  months,
+}: {
+  project: Project;
+  months: MonthSlot[];
+}) {
+  const [byMonth, setByMonth] = React.useState<
+    Record<string, MonthlySummary | undefined>
+  >({});
+  const onData = React.useCallback(
+    (projectId: string, key: string, data: MonthlySummary | undefined) => {
+      if (projectId !== project.id) return;
+      setByMonth((prev) => (prev[key] === data ? prev : { ...prev, [key]: data }));
+    },
+    [project.id],
+  );
+
+  const series = months.map((m) => {
+    const s = byMonth[m.key];
+    return {
+      label: m.label,
+      value: s?.realHourlyRate ?? 0,
+      display:
+        s?.realHourlyRate != null
+          ? Math.round(s.realHourlyRate).toLocaleString('ru-RU')
+          : '—',
+    };
+  });
+  const max = Math.max(
+    1,
+    project.hourlyRate || 0,
+    ...series.map((s) => s.value),
+  );
+
+  return (
+    <Card>
+      {months.map((m) => (
+        <ProjectMonthFetcher
+          key={m.key}
+          projectId={project.id}
+          monthKey={m.key}
+          onData={onData}
+        />
+      ))}
+      <div className="flex items-baseline justify-between">
+        <h4
+          className="text-lg font-medium text-stone"
+          style={{ fontFamily: 'Fraunces, serif' }}
+        >
+          {project.name}
+        </h4>
+        {project.hourlyRate != null && (
+          <span className="text-[10px] uppercase tracking-[0.22em] text-stone/70">
+            цель: {Math.round(project.hourlyRate)} ₽/ч
+          </span>
+        )}
+      </div>
+      <div className="mt-4">
+        <BarChart
+          data={series}
+          max={max}
+          color="#E98074"
+          refLine={project.hourlyRate || undefined}
+        />
+      </div>
+    </Card>
+  );
+}
+
+interface BarChartProps {
+  data: { label: string; value: number; display: string }[];
+  max: number;
+  color: string;
+  refLine?: number;
+}
+
+/**
+ * Minimal inline SVG bar chart — no chart lib. Renders bars with labels
+ * below and numeric values on top; optional `refLine` draws a dashed
+ * target line (used for per-project declared rate).
+ */
+function BarChart({ data, max, color, refLine }: BarChartProps) {
+  const w = 560;
+  const h = 180;
+  const padL = 8;
+  const padR = 8;
+  const padT = 24;
+  const padB = 28;
+  const innerW = w - padL - padR;
+  const innerH = h - padT - padB;
+  const barGap = 8;
+  const n = data.length;
+  const barW = (innerW - barGap * (n - 1)) / Math.max(1, n);
+
+  return (
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      className="w-full"
+      role="img"
+      aria-label="bar chart"
+    >
+      <line
+        x1={padL}
+        x2={w - padR}
+        y1={h - padB}
+        y2={h - padB}
+        stroke="#8E8D8A"
+        strokeOpacity={0.25}
+        strokeWidth={1}
+      />
+      {refLine != null && refLine > 0 && (
+        <line
+          x1={padL}
+          x2={w - padR}
+          y1={h - padB - (Math.min(refLine, max) / max) * innerH}
+          y2={h - padB - (Math.min(refLine, max) / max) * innerH}
+          stroke="#8E8D8A"
+          strokeOpacity={0.4}
+          strokeWidth={1}
+          strokeDasharray="4 4"
+        />
+      )}
+      {data.map((d, i) => {
+        const x = padL + i * (barW + barGap);
+        const bh = max > 0 ? (d.value / max) * innerH : 0;
+        const y = h - padB - bh;
+        return (
+          <g key={d.label + i}>
+            <rect
+              x={x}
+              y={y}
+              width={barW}
+              height={Math.max(0, bh)}
+              rx={4}
+              fill={color}
+              fillOpacity={d.value > 0 ? 0.9 : 0.15}
+            />
+            <text
+              x={x + barW / 2}
+              y={Math.max(y - 6, padT - 4)}
+              textAnchor="middle"
+              fontFamily="Fraunces, serif"
+              fontSize="11"
+              fill="#8E8D8A"
+            >
+              {d.display}
+            </text>
+            <text
+              x={x + barW / 2}
+              y={h - padB + 16}
+              textAnchor="middle"
+              fontSize="10"
+              letterSpacing="0.12em"
+              fill="#8E8D8A"
+              fillOpacity={0.8}
+            >
+              {d.label.toUpperCase()}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}

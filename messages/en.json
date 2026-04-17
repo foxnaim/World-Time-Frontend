@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "about": "About",
+    "contacts": "Contacts",
+    "login": "Sign in",
+    "logout": "Sign out"
+  },
+  "hero": {
+    "eyebrow": "Next-generation time tracking",
+    "title": "WorkTime — your team's hours, in order",
+    "subtitle": "Telegram bot, office terminal, and editorial analytics in one service. No paper timesheets — full transparency for the team and the manager.",
+    "cta": "Get started free"
+  },
+  "segments": {
+    "b2b": {
+      "title": "For business",
+      "bullets": [
+        "Unified time tracking for office and remote work",
+        "HR process integration and 1C export",
+        "Role-based access for managers and accounting",
+        "SLA and enterprise support"
+      ]
+    },
+    "b2c": {
+      "title": "For teams and freelancers",
+      "bullets": [
+        "Free plan for small teams",
+        "Log hours right from Telegram",
+        "Reports and stats with zero setup",
+        "Instant start — no onboarding needed"
+      ]
+    }
+  },
+  "features": {
+    "telegram_bot": {
+      "title": "Telegram bot",
+      "description": "Start and end your workday with a single command in the messenger."
+    },
+    "office_terminal": {
+      "title": "Office terminal",
+      "description": "QR-code scanner at the entrance for precise on-site attendance."
+    },
+    "analytics": {
+      "title": "Editorial analytics",
+      "description": "Clear reports on team hours, overtime, and vacations."
+    },
+    "integrations": {
+      "title": "Integrations",
+      "description": "Export to 1C, Google Sheets, and your internal systems via API."
+    },
+    "security": {
+      "title": "Security",
+      "description": "Encryption, role-based access, and data stored in reliable infrastructure."
+    },
+    "support": {
+      "title": "24/7 support",
+      "description": "Fast replies in chat, email, and Telegram — any time of day."
+    }
+  },
+  "auth": {
+    "login": "Sign in to WorkTime",
+    "code_placeholder": "Enter the code from Telegram",
+    "submit": "Sign in",
+    "bot_hint": "Get the code from our Telegram bot @worktime_bot"
+  }
+}

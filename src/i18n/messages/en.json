@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "about": "About",
+    "contacts": "Contacts"
+  },
+  "hero": {
+    "eyebrow": "Next-generation time tracking",
+    "title": "WorkTime — your team's hours, in order",
+    "subtitle": "Telegram bot, office terminal, and editorial analytics in one service. No paper timesheets — full transparency for the team and the manager."
+  },
+  "segments": {
+    "b2b": {
+      "title": "For business",
+      "bullets": {
+        "1": "Unified time tracking for office and remote work",
+        "2": "HR process integration and 1C export",
+        "3": "Role-based access for managers and accounting",
+        "4": "SLA and enterprise support"
+      }
+    },
+    "b2c": {
+      "title": "For teams and freelancers",
+      "bullets": {
+        "1": "Free plan for small teams",
+        "2": "Log hours right from Telegram",
+        "3": "Reports and stats with zero setup",
+        "4": "Instant start — no onboarding needed"
+      }
+    }
+  },
+  "howItWorks": {
+    "steps": {
+      "1": {
+        "title": "Connect your team",
+        "description": "Invite teammates to the Telegram bot with a single link."
+      },
+      "2": {
+        "title": "Set the schedule",
+        "description": "Define working hours, shifts, and on-site locations."
+      },
+      "3": {
+        "title": "Track the results",
+        "description": "Get reports on hours, overtime, and vacations."
+      }
+    }
+  },
+  "features": {
+    "01": {
+      "title": "Telegram bot",
+      "description": "Start and end your workday with a single command in the messenger."
+    },
+    "02": {
+      "title": "Office terminal",
+      "description": "QR-code scanner at the entrance for precise on-site attendance."
+    },
+    "03": {
+      "title": "Editorial analytics",
+      "description": "Clear reports on team hours, overtime, and vacations."
+    },
+    "04": {
+      "title": "Integrations",
+      "description": "Export to 1C, Google Sheets, and your internal systems via API."
+    },
+    "05": {
+      "title": "Security",
+      "description": "Encryption, role-based access, and data stored in reliable infrastructure."
+    },
+    "06": {
+      "title": "24/7 support",
+      "description": "Fast replies in chat, email, and Telegram — any time of day."
+    }
+  },
+  "pricing": {
+    "free": {
+      "title": "Free",
+      "price": "$0",
+      "description": "For teams up to 5 people",
+      "cta": "Start for free"
+    },
+    "team": {
+      "title": "Team",
+      "price": "$3 / seat",
+      "description": "For growing teams up to 50 people",
+      "cta": "Try for 14 days"
+    },
+    "enterprise": {
+      "title": "Enterprise",
+      "price": "Custom",
+      "description": "For large companies with SLAs and integrations",
+      "cta": "Contact us"
+    }
+  },
+  "cta": {
+    "title": "Ready to start?",
+    "subtitle": "Onboard your team in 5 minutes — no card, no implementation project.",
+    "button": "Start for free"
+  },
+  "footer": {
+    "copyright": "© {year} WorkTime. All rights reserved."
+  },
+  "login": {
+    "title": "Sign in to WorkTime",
+    "subtitle": "Enter the code from our Telegram bot @{bot}.",
+    "submit": "Sign in",
+    "codeLabel": "Verification code"
+  }
+}
