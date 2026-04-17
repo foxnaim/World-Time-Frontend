@@ -1,7 +1,15 @@
+import { createRequire } from 'node:module';
 import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
 
+const require = createRequire(import.meta.url);
+
 const isProd = process.env.NODE_ENV === 'production';
+
+// Use the Redis-backed cache handler only in production builds *and* only
+// when REDIS_URL is available. In dev we stay on Next's file cache so a
+// missing local Redis doesn't break hot reload.
+const useRedisCache = isProd && Boolean(process.env.REDIS_URL);
 
 // Backend origin for CSP's connect-src. Fall back to 'self' if the public
 // API URL is unset (typical for dev where API is same-origin behind nginx).
@@ -42,6 +50,14 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   transpilePackages: ['@worktime/ui', '@worktime/types'],
+  ...(useRedisCache
+    ? {
+        cacheHandler: require.resolve('./cache-handler.mjs'),
+        // Disable the in-memory LRU Next ships with — our handler has its
+        // own L1 and we don't want two LRUs fighting for RAM.
+        cacheMaxMemorySize: 0,
+      }
+    : {}),
   experimental: {
     optimizePackageImports: ['framer-motion'],
   },
