@@ -11,9 +11,30 @@ import { useEffect } from 'react';
  */
 export function RegisterSw() {
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') return;
     if (typeof window === 'undefined') return;
     if (!('serviceWorker' in navigator)) return;
+
+    // In dev, forcibly unregister any previously-registered SW and clear its
+    // caches. Otherwise an old SW from a production build on the same origin
+    // keeps serving stale JS bundles forever (browser prefers SW cache over
+    // network even across next dev restarts).
+    if (process.env.NODE_ENV !== 'production') {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((regs) => Promise.all(regs.map((r) => r.unregister())))
+        .catch(() => {});
+      if (typeof caches !== 'undefined') {
+        caches
+          .keys()
+          .then((keys) =>
+            Promise.all(
+              keys.filter((k) => k.startsWith('tact-sw-') || k.startsWith('worktime-sw-')).map((k) => caches.delete(k)),
+            ),
+          )
+          .catch(() => {});
+      }
+      return;
+    }
 
     let cancelled = false;
 
