@@ -15,13 +15,23 @@ const useRedisCache = isProd && Boolean(process.env.REDIS_URL);
 // API URL is unset (typical for dev where API is same-origin behind nginx).
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
 
+// Dev needs 'unsafe-eval' for React Refresh + webpack hot-reload, and ws:
+// origins for HMR sockets. Prod strips both.
+const scriptSrc = isProd
+  ? "script-src 'self' 'unsafe-inline' https://telegram.org"
+  : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org";
+
+const connectSrc = isProd
+  ? `connect-src 'self'${apiUrl ? ` ${apiUrl}` : ''}`
+  : `connect-src 'self' ws: wss: http://localhost:* http://127.0.0.1:*${apiUrl ? ` ${apiUrl}` : ''}`;
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://telegram.org",
+  scriptSrc,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: https://t.me https://*.telegram.org",
-  "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self'${apiUrl ? ` ${apiUrl}` : ''}`,
+  "img-src 'self' data: blob: https://t.me https://*.telegram.org",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  connectSrc,
   'frame-src https://oauth.telegram.org',
 ].join('; ');
 
