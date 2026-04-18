@@ -16,21 +16,51 @@ interface Project {
   fixedPrice?: number | null;
   currency?: string | null;
   status: string;
-  monthHours?: number;
+  totalSeconds?: number;
+}
+
+interface RealRateProjectRow {
+  projectId: string;
+  seconds: number;
+  excluded?: boolean;
 }
 
 interface RealRate {
   effectiveRate: number;
   totalSeconds: number;
   totalIncome: number;
-  insight?: string;
   periodStart?: string;
   periodEnd?: string;
+  perProject?: RealRateProjectRow[];
 }
 
 function currentYearMonth(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/**
+ * Derive a short Russian-language insight from the user's effective rate.
+ *
+ * The `/api/analytics/user/real-hourly-rate` endpoint returns the numeric
+ * `effectiveRate` but no pre-built message, so we mirror the RUB rate bands
+ * used by backend `ProjectService.buildInsight` (<500 / 500-1500 /
+ * 1500-3000 / >3000) to stay consistent with per-project summaries.
+ */
+function deriveInsight(rate: number | null | undefined, totalSeconds: number): string {
+  if (totalSeconds <= 0 || rate == null) {
+    return 'Записывайте время и получайте ежемесячные инсайты: реальная ставка, недозаработок и где деньги утекают.';
+  }
+  if (rate < 500) {
+    return 'Ваша реальная ставка ниже рынка — стоит поднять цены или сократить скрытые часы.';
+  }
+  if (rate < 1500) {
+    return 'Ставка уровня новичка. Есть куда расти: фиксируйте всё время и пересмотрите прайс.';
+  }
+  if (rate < 3000) {
+    return 'Хорошая рыночная ставка. Продолжайте вести учёт — это защищает маржу.';
+  }
+  return 'Топ-ставка — вы в верхнем сегменте. Следите, чтобы скрытые часы не размывали маржу.';
 }
 
 export default function FreelanceOverviewPage() {
@@ -47,10 +77,17 @@ export default function FreelanceOverviewPage() {
 
   const list = Array.isArray(projects) ? projects : [];
   const activeProjects = list.filter((p) => p.status === 'ACTIVE');
-  const monthHoursTotal = list.reduce((sum, p) => sum + (p.monthHours || 0), 0);
+  // `/api/analytics/user/real-hourly-rate` is the only endpoint that scopes
+  // totals to the current month — `/api/projects` exposes lifetime totals.
   const monthSeconds = realRate?.totalSeconds ?? 0;
-  const hoursFromRate = monthSeconds / 3600;
-  const hours = monthHoursTotal > 0 ? monthHoursTotal : hoursFromRate;
+  const hours = monthSeconds / 3600;
+  const monthHoursByProject = React.useMemo(() => {
+    const map = new Map<string, number>();
+    for (const row of realRate?.perProject ?? []) {
+      map.set(row.projectId, (row.seconds ?? 0) / 3600);
+    }
+    return map;
+  }, [realRate]);
 
   return (
     <div className="flex flex-col gap-10 py-8 md:py-12">
@@ -113,7 +150,11 @@ export default function FreelanceOverviewPage() {
         ) : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {list.slice(0, 6).map((p) => (
-              <ProjectCard key={p.id} project={p} monthHours={p.monthHours || 0} />
+              <ProjectCard
+                key={p.id}
+                project={p}
+                monthHours={monthHoursByProject.get(p.id) ?? 0}
+              />
             ))}
           </div>
         )}
@@ -121,10 +162,7 @@ export default function FreelanceOverviewPage() {
 
       <section>
         <InsightCard
-          insight={
-            realRate?.insight ||
-            'Записывайте время и получайте ежемесячные инсайты: реальная ставка, недозаработок и где деньги утекают.'
-          }
+          insight={deriveInsight(realRate?.effectiveRate ?? null, monthSeconds)}
           rate={realRate?.effectiveRate ?? null}
         />
       </section>
