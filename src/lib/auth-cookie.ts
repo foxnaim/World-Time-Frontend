@@ -1,5 +1,5 @@
 /**
- * Client-side cookie helpers for the Tact access/refresh tokens.
+ * Client-side cookie helpers for the Work Tact access/refresh tokens.
  *
  * Server code should read cookies via `next/headers`. These helpers are a
  * fallback for client components that need to attach a Bearer token.

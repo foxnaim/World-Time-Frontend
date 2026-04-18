@@ -5,7 +5,7 @@
   },
   "hero": {
     "eyebrow": "Next-generation time tracking",
-    "title": "Tact — your team's hours, in order",
+    "title": "Work Tact — your team's hours, in order",
     "subtitle": "Telegram bot, office terminal, and editorial analytics in one service. No paper timesheets — full transparency for the team and the manager."
   },
   "segments": {
@@ -96,10 +96,10 @@
     "button": "Start for free"
   },
   "footer": {
-    "copyright": "© {year} Tact. All rights reserved."
+    "copyright": "© {year} Work Tact. All rights reserved."
   },
   "login": {
-    "title": "Sign in to Tact",
+    "title": "Sign in to Work Tact",
     "subtitle": "Enter the code from our Telegram bot @{bot}.",
     "submit": "Sign in",
     "codeLabel": "Verification code"

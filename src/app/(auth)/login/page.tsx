@@ -131,7 +131,7 @@ export function LoginView({
       <div className="relative bg-cream/80 backdrop-blur-sm rounded-2xl border border-stone/20 shadow-[0_1px_0_rgba(142,141,138,0.08)] p-8 md:p-10">
         <div className="text-center mb-8">
           <p className="text-[10px] uppercase tracking-[0.28em] text-stone/60 mb-3">
-            Tact · Авторизация
+            Work Tact · Авторизация
           </p>
           <h1
             className="text-4xl md:text-5xl font-medium tracking-tight text-stone"

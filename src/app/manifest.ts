@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Tact — учёт рабочего времени',
-    short_name: 'Tact',
-    description: 'Tact — ритм рабочего дня через Telegram и QR-коды.',
+    name: 'Work Tact — учёт рабочего времени',
+    short_name: 'Work Tact',
+    description: 'Work Tact — ритм рабочего дня через Telegram и QR-коды.',
     start_url: '/',
     display: 'standalone',
     background_color: '#EAE7DC',

@@ -14,7 +14,7 @@ const publicSchema = z.object({
     .string()
     .min(1)
     .optional()
-    .default('worktime_bot'),
+    .default('worktact_bot'),
   NEXT_PUBLIC_APP_URL: z
     .string()
     .url()

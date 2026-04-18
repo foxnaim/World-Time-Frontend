@@ -2,19 +2,19 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Tact — Экосистема учёта времени',
+  title: 'Work Tact — Экосистема учёта времени',
   description:
-    'Tact by AOne Agency — учёт рабочего времени для бизнеса и фрилансеров. QR, геозоны, анти-фрод, отчёты в Google Sheets.',
+    'Work Tact by AOne Agency — учёт рабочего времени для бизнеса и фрилансеров. QR, геозоны, анти-фрод, отчёты в Google Sheets.',
   openGraph: {
-    title: 'Tact — Экосистема учёта времени',
+    title: 'Work Tact — Экосистема учёта времени',
     description:
       'QR-сканер, геозоны, отчёты. Для команд и фрилансеров.',
     type: 'website',
-    siteName: 'Tact',
+    siteName: 'Work Tact',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Tact — Экосистема учёта времени',
+    title: 'Work Tact — Экосистема учёта времени',
     description: 'QR-сканер, геозоны, отчёты. Для команд и фрилансеров.',
   },
 };

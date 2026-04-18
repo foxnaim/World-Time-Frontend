@@ -13,7 +13,7 @@ import { RegisterSw } from '@/components/office/register-sw';
  */
 
 export const metadata: Metadata = {
-  title: 'Tact — Check-in',
+  title: 'Work Tact — Check-in',
   robots: { index: false, follow: false },
 };
 

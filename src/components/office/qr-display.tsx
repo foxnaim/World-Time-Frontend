@@ -18,7 +18,7 @@ export interface QrDisplayProps {
   companyName?: string;
 }
 
-const BOT_USERNAME = 'worktime_bot';
+const BOT_USERNAME = 'worktact_bot';
 
 function buildTelegramUrl(token: string): string {
   return `https://t.me/${BOT_USERNAME}?start=qr_${encodeURIComponent(token)}`;
@@ -127,7 +127,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
       <section className="absolute inset-0 flex flex-col items-center justify-center px-6">
         <div className="flex flex-col items-center">
           <span className="editorial-eyebrow text-stone/70">
-            Tact · Checkpoint
+            Work Tact · Checkpoint
           </span>
           <h1
             className="mt-3 text-center text-6xl md:text-7xl lg:text-8xl leading-[0.95] text-[#2a2927]"
@@ -229,7 +229,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
               className="text-xs uppercase tracking-[0.45em] text-[#2a2927]"
               style={{ fontWeight: 500 }}
             >
-              Tact
+              Work Tact
             </span>
           </div>
         </div>

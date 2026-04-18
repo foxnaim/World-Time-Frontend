@@ -70,7 +70,7 @@ export default function AuthLayout({
             className="text-xl font-medium tracking-tight"
             style={{ fontFamily: 'Fraunces, serif' }}
           >
-            Tact
+            Work Tact
           </span>
           <span className="text-[10px] uppercase tracking-[0.28em] text-stone/60">
             / ритм рабочего дня

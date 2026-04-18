@@ -109,7 +109,7 @@ export function Hero() {
           variants={item}
           className="mb-4 text-[10px] uppercase tracking-[0.4em] text-stone"
         >
-          NO. 01 · 2026 · TACT
+          NO. 01 · 2026 · WORK TACT
         </motion.span>
 
         {/* dial + overlaid heading */}
@@ -135,7 +135,7 @@ export function Hero() {
               Time, in rhythm
             </span>
             <span className="text-7xl sm:text-8xl md:text-9xl font-medium leading-[0.9] tracking-tight text-stone">
-              TACT
+              WORK TACT
             </span>
             <span className="mt-2 text-[10px] uppercase tracking-[0.4em] text-coral">
               2026

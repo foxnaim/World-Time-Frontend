@@ -9,7 +9,7 @@ import { Cta } from '@/components/landing/cta';
 import { Footer } from '@/components/landing/footer';
 
 export const metadata: Metadata = {
-  title: 'Tact — Учёт времени для бизнеса и фрилансеров',
+  title: 'Work Tact — Учёт времени для бизнеса и фрилансеров',
   description:
     'QR-сканер, геозоны, анти-фрод и отчёты в Google Sheets. Начните за 5 минут.',
   alternates: {

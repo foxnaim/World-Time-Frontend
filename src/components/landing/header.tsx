@@ -22,9 +22,9 @@ export function Header() {
           href="/"
           className="text-stone text-2xl md:text-3xl tracking-tight rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-coral focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
           style={{ fontFamily: 'Fraunces, serif' }}
-          aria-label="Tact — на главную"
+          aria-label="Work Tact — на главную"
         >
-          Tact
+          Work Tact
         </Link>
 
         <nav

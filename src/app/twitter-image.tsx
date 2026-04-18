@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Tact — ритм рабочего дня';
+export const alt = 'Work Tact — ритм рабочего дня';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -85,7 +85,7 @@ export default async function TwitterImage() {
             display: 'flex',
           }}
         >
-          Tact
+          Work Tact
         </div>
 
         <div
@@ -98,7 +98,7 @@ export default async function TwitterImage() {
             display: 'flex',
           }}
         >
-          Tact
+          Work Tact
         </div>
 
         <div

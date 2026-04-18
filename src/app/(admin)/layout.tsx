@@ -68,7 +68,7 @@ function Sidebar() {
           className="text-stone-800 hover:text-stone-600 transition-colors tracking-tight text-lg"
           style={{ fontFamily: 'Fraunces, serif' }}
         >
-          Tact
+          Work Tact
         </Link>
         <span className="ml-3 text-[10px] uppercase tracking-[0.28em] text-stone-500">
           admin
