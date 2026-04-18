@@ -10,37 +10,36 @@ import { MonthPicker } from '@/components/dashboard/company/month-picker';
 
 type CompanyDetail = { id: string; slug: string; name: string };
 
-type LateStatsResp = {
-  items: Array<{
-    employeeId: string;
-    employeeName: string;
-    lateCount: number;
-    totalLateMinutes: number;
-    avgLateMinutes: number;
-  }>;
+// Backend returns arrays (CompanyLateStats[], OvertimeReport[],
+// CompanyPayoutRow[]) and uses `name` for the full-name field. Don't wrap in
+// `{ items: [] }` — that was the previous shape, and an incorrect one.
+type LateStatsRow = {
+  employeeId: string;
+  name: string;
+  lateCount: number;
+  totalLateMinutes: number;
+  avgLateMinutes: number;
 };
 
-type OvertimeResp = {
-  items: Array<{
-    employeeId: string;
-    employeeName: string;
-    overtimeHours: number;
-    nightHours?: number;
-  }>;
+type OvertimeRow = {
+  employeeId: string;
+  name: string;
+  overtimeHours: number;
+  nightHours?: number;
 };
 
-type SummaryResp = {
-  payouts?: Array<{
-    employeeId: string;
-    employeeName: string;
-    baseSalary: number;
-    overtimePay: number;
-    deductions: number;
-    total: number;
-  }>;
+type PayoutRow = {
+  employeeId: string;
+  name: string;
+  baseSalary: number;
+  overtimePay: number;
+  deductions: number;
+  total: number;
 };
 
-type ExportResp = { url: string };
+// Sheets export result: backend returns `spreadsheetUrl`, but we accept a
+// plain `url` too for forward-compatibility with older builds.
+type ExportResp = { spreadsheetUrl?: string; url?: string };
 
 type TabKey = 'late' | 'overtime' | 'payouts';
 
@@ -164,12 +163,12 @@ export default function ReportsPage() {
     id && tab === 'late' ? `/api/analytics/company/${id}/late-stats?month=${month}` : null;
   const overtimeKey =
     id && tab === 'overtime' ? `/api/analytics/company/${id}/overtime?month=${month}` : null;
-  const summaryKey =
-    id && tab === 'payouts' ? `/api/analytics/company/${id}/summary?month=${month}` : null;
+  const payoutsKey =
+    id && tab === 'payouts' ? `/api/analytics/company/${id}/payouts?month=${month}` : null;
 
-  const lateQ = useSWR<LateStatsResp>(lateKey, fetcher);
-  const overtimeQ = useSWR<OvertimeResp>(overtimeKey, fetcher);
-  const summaryQ = useSWR<SummaryResp>(summaryKey, fetcher);
+  const lateQ = useSWR<LateStatsRow[]>(lateKey, fetcher);
+  const overtimeQ = useSWR<OvertimeRow[]>(overtimeKey, fetcher);
+  const payoutsQ = useSWR<PayoutRow[]>(payoutsKey, fetcher);
 
   const runExport = async () => {
     if (!id) return;
@@ -178,7 +177,9 @@ export default function ReportsPage() {
     setExportUrl(null);
     try {
       const res = await api.post<ExportResp>(`/api/sheets/export/company/${id}/monthly`, { month });
-      setExportUrl(res.url);
+      const url = res.spreadsheetUrl ?? res.url ?? null;
+      if (!url) throw new Error('Пустой ответ от сервера');
+      setExportUrl(url);
     } catch (err: unknown) {
       setExportErr(err instanceof Error ? err.message : 'Не удалось экспортировать');
     } finally {
@@ -272,7 +273,7 @@ export default function ReportsPage() {
                       className="text-base tracking-tight"
                       style={{ fontFamily: 'Fraunces, serif' }}
                     >
-                      {r.employeeName}
+                      {r.name}
                     </span>
                   ),
                 },
@@ -316,7 +317,7 @@ export default function ReportsPage() {
                   ),
                 },
               ]}
-              rows={lateQ.data.items ?? []}
+              rows={lateQ.data ?? []}
             />
           ))}
 
@@ -341,7 +342,7 @@ export default function ReportsPage() {
                       className="text-base tracking-tight"
                       style={{ fontFamily: 'Fraunces, serif' }}
                     >
-                      {r.employeeName}
+                      {r.name}
                     </span>
                   ),
                 },
@@ -372,14 +373,14 @@ export default function ReportsPage() {
                   ),
                 },
               ]}
-              rows={overtimeQ.data.items ?? []}
+              rows={overtimeQ.data ?? []}
             />
           ))}
 
         {tab === 'payouts' &&
-          (summaryQ.error ? (
-            <ErrorState onRetry={() => summaryQ.mutate()} />
-          ) : !summaryQ.data ? (
+          (payoutsQ.error ? (
+            <ErrorState onRetry={() => payoutsQ.mutate()} />
+          ) : !payoutsQ.data ? (
             <div className="p-6 flex flex-col gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <Skeleton key={i} className="h-10 w-full" />
@@ -397,7 +398,7 @@ export default function ReportsPage() {
                       className="text-base tracking-tight"
                       style={{ fontFamily: 'Fraunces, serif' }}
                     >
-                      {r.employeeName}
+                      {r.name}
                     </span>
                   ),
                 },
@@ -437,7 +438,7 @@ export default function ReportsPage() {
                   ),
                 },
               ]}
-              rows={summaryQ.data.payouts ?? []}
+              rows={payoutsQ.data ?? []}
               empty="Нет данных по выплатам"
             />
           ))}
