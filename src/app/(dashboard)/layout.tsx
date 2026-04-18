@@ -13,6 +13,28 @@ type Company = {
   name: string;
 };
 
+type SubscriptionTier = 'FREE' | 'TEAM' | 'ENTERPRISE';
+type SubscriptionStatus =
+  | 'ACTIVE'
+  | 'TRIALING'
+  | 'PAST_DUE'
+  | 'CANCELED'
+  | 'EXPIRED'
+  | 'INCOMPLETE';
+
+type MeSubscription = {
+  companyId: string;
+  tier: SubscriptionTier;
+  status: SubscriptionStatus;
+  seatsLimit?: number | null;
+  currentPeriodEnd?: string | null;
+};
+
+type MeEmployee = {
+  role: 'OWNER' | 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | string;
+  company: { id: string; name: string; slug: string };
+};
+
 type Me = {
   id: string;
   telegramId: string;
@@ -21,6 +43,8 @@ type Me = {
   username: string | null;
   phone: string | null;
   avatarUrl: string | null;
+  employees?: MeEmployee[];
+  subscriptions?: MeSubscription[];
 };
 
 function formatDisplayName(me: Me | undefined): string {
@@ -154,13 +178,136 @@ function CompanySwitcher({ companies, activeSlug }: { companies: Company[]; acti
   );
 }
 
+/**
+ * Pick the "active" owner company for badge display.
+ *
+ * Rule: first employees[] entry whose role === 'OWNER'. We deliberately rely
+ * on the ordering that the backend returns rather than sorting on slug — the
+ * rest of the dashboard (CompanySwitcher) also uses the first entry as the
+ * default, so this keeps the badge aligned with what's actually shown in the
+ * header.
+ */
+function pickOwnerCompanyId(me: Me | undefined): string | null {
+  const ownerEmp = me?.employees?.find((e) => e.role === 'OWNER');
+  return ownerEmp?.company.id ?? null;
+}
+
+/**
+ * Returns the subscription record for the given companyId, or null when the
+ * company has no subscription row yet (pre-FREE seed, or endpoint still
+ * deploying). Callers should treat null as "nothing to render".
+ */
+function findSubscription(
+  me: Me | undefined,
+  companyId: string | null,
+): MeSubscription | null {
+  if (!me?.subscriptions || !companyId) return null;
+  return me.subscriptions.find((s) => s.companyId === companyId) ?? null;
+}
+
+function tierLabel(tier: SubscriptionTier): string {
+  switch (tier) {
+    case 'FREE':
+      return 'FREE';
+    case 'TEAM':
+      return 'TEAM';
+    case 'ENTERPRISE':
+      return 'ENTERPRISE';
+    default:
+      return tier;
+  }
+}
+
+/**
+ * Localized, human-friendly status line. Returns null for ACTIVE / TRIALING
+ * because those are the "happy path" and rendering "Активна" under the badge
+ * is noisy. Non-happy states are surfaced with muted-coral so the owner
+ * actually notices them.
+ */
+function statusLabel(status: SubscriptionStatus): string | null {
+  switch (status) {
+    case 'ACTIVE':
+    case 'TRIALING':
+      return null;
+    case 'PAST_DUE':
+      return 'Просрочка';
+    case 'CANCELED':
+      return 'Отменена';
+    case 'EXPIRED':
+      return 'Истекла';
+    case 'INCOMPLETE':
+      return 'Не завершена';
+    default:
+      return status;
+  }
+}
+
+function TierBadge({ sub }: { sub: MeSubscription }) {
+  const label = tierLabel(sub.tier);
+  const warn =
+    sub.status === 'PAST_DUE' ||
+    sub.status === 'EXPIRED' ||
+    sub.status === 'CANCELED' ||
+    sub.status === 'INCOMPLETE';
+  return (
+    <span
+      className={classNames(
+        'inline-flex items-center gap-1 px-2 h-5 rounded-full border text-[10px] uppercase tracking-[0.22em]',
+        warn
+          ? 'border-[#E85A4F]/60 text-[#E85A4F] bg-[#E85A4F]/10'
+          : 'border-[#E98074]/50 text-[#E98074] bg-[#E98074]/10',
+      )}
+      title={sub.status}
+    >
+      <span aria-hidden className="w-1 h-1 rounded-full bg-[#E98074]" />
+      {label}
+    </span>
+  );
+}
+
 function UserMenu() {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [loggingOut, setLoggingOut] = React.useState(false);
   const { data: me } = useSWR<Me>('/api/auth/me', fetcher);
   const displayName = formatDisplayName(me);
   const secondary = formatSecondary(me);
   const initials = formatInitials(me);
   const buttonLabel = me?.username ? `@${me.username}` : 'Аккаунт';
+
+  const ownerCompanyId = pickOwnerCompanyId(me);
+  const ownerCompany = me?.employees?.find(
+    (e) => e.role === 'OWNER' && e.company.id === ownerCompanyId,
+  )?.company;
+  const subscription = findSubscription(me, ownerCompanyId);
+  const statusNote = subscription ? statusLabel(subscription.status) : null;
+
+  const onProfile = () => {
+    setOpen(false);
+    router.push('/profile');
+  };
+
+  const onLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      // Best-effort: don't block logout on server/network failure.
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+        });
+      } catch {
+        /* ignore */
+      }
+      clearAuthCookies();
+      setOpen(false);
+      router.push('/');
+      router.refresh();
+    } finally {
+      setLoggingOut(false);
+    }
+  };
   return (
     <div className="relative">
       <button
@@ -195,9 +342,38 @@ function UserMenu() {
             {secondary && (
               <div className="text-xs text-[#8E8D8A]/70 mt-0.5 truncate">{secondary}</div>
             )}
+            {ownerCompany && subscription && (
+              <div className="mt-2 flex items-center gap-2 min-w-0">
+                <span
+                  className="text-xs text-[#8E8D8A] truncate"
+                  style={{ fontFamily: 'Fraunces, serif' }}
+                >
+                  {ownerCompany.name}
+                </span>
+                <TierBadge sub={subscription} />
+              </div>
+            )}
+            {ownerCompany && subscription && statusNote && (
+              <div className="text-[10px] uppercase tracking-[0.22em] text-[#E85A4F] mt-1">
+                {statusNote}
+              </div>
+            )}
           </div>
-          <button className="w-full text-left px-4 py-2 hover:text-[#E98074]">Профиль</button>
-          <button className="w-full text-left px-4 py-2 hover:text-[#E85A4F]">Выйти</button>
+          <button
+            type="button"
+            onClick={onProfile}
+            className="w-full text-left px-4 py-2 hover:text-[#E98074]"
+          >
+            Профиль
+          </button>
+          <button
+            type="button"
+            onClick={onLogout}
+            disabled={loggingOut}
+            className="w-full text-left px-4 py-2 hover:text-[#E85A4F] disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loggingOut ? 'Выход…' : 'Выйти'}
+          </button>
         </div>
       )}
     </div>
