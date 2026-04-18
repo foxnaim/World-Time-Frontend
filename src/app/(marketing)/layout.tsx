@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
+import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { getServerUser } from '@/lib/auth-server';
 
 export const metadata: Metadata = {
   title: 'Work Tact — Экосистема учёта времени',
@@ -24,6 +26,10 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function MarketingLayout({ children }: { children: ReactNode }) {
+export default async function MarketingLayout({ children }: { children: ReactNode }) {
+  const user = await getServerUser();
+  if (user) {
+    redirect('/dashboard');
+  }
   return <>{children}</>;
 }
