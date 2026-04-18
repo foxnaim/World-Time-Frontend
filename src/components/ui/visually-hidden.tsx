@@ -4,7 +4,7 @@ import * as React from 'react';
 
 export interface VisuallyHiddenProps
   extends React.HTMLAttributes<HTMLSpanElement> {
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof React.JSX.IntrinsicElements;
   children: React.ReactNode;
 }
 

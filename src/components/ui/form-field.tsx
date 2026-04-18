@@ -4,7 +4,7 @@ import * as React from 'react';
 import { cn } from '@tact/ui';
 
 export interface FormFieldProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id'> {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'prefix'> {
   label: string;
   hint?: string;
   error?: string;

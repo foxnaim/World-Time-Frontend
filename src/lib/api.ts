@@ -96,15 +96,19 @@ async function request<T>(
     : await res.text().catch(() => null);
 
   if (!res.ok) {
+    let extracted: string | null = null;
+    if (
+      isJson &&
+      data &&
+      typeof data === 'object' &&
+      'message' in data &&
+      typeof (data as { message: unknown }).message === 'string'
+    ) {
+      extracted = (data as { message: string }).message;
+    }
     const message =
-      (isJson &&
-        data &&
-        typeof data === 'object' &&
-        'message' in data &&
-        typeof (data as { message: unknown }).message === 'string' &&
-        (data as { message: string }).message) ||
-      res.statusText ||
-      `Request failed with status ${res.status}`;
+      extracted ??
+      (res.statusText || `Request failed with status ${res.status}`);
     throw new ApiError(message, res.status, url, data);
   }
 

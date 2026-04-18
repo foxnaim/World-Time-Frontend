@@ -5,7 +5,7 @@ import { api, ApiError } from './api';
 function jsonResponse(body: unknown, init: Partial<ResponseInit> & { ok?: boolean; status?: number } = {}) {
   const status = init.status ?? 200;
   return {
-    ok: init.ok ?? status >= 200 && status < 300,
+    ok: init.ok ?? (status >= 200 && status < 300),
     status,
     statusText: init.statusText ?? 'OK',
     headers: new Headers({ 'content-type': 'application/json' }),
