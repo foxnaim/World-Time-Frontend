@@ -42,7 +42,17 @@ function getBaseUrl(): string {
 
 function buildUrl(path: string, query?: RequestOptions['query']): string {
   const base = getBaseUrl();
-  const p = path.startsWith('/') ? path : `/${path}`;
+  let p = path.startsWith('/') ? path : `/${path}`;
+  // Strip a leading `/api` from the path if the base URL already ends
+  // with `/api` — otherwise callers that write `/api/time-entries/active`
+  // collide with a base like `http://host/api` producing `/api/api/...`.
+  // Safe no-op when base is just `/api` and path starts with `/api/` —
+  // we drop the duplicate.
+  if (base.replace(/^https?:\/\/[^/]+/, '').replace(/\/$/, '') === '/api') {
+    if (p === '/api' || p.startsWith('/api/')) {
+      p = p.slice(4) || '/';
+    }
+  }
   const url = `${base}${p}`;
   if (!query) return url;
   const params = new URLSearchParams();
