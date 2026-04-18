@@ -40,15 +40,12 @@ export interface TimerProps {
  *  - Start warns if another timer is already active; "Переключить" calls
  *    start — the backend auto-stops the previous entry.
  */
-export const Timer: React.FC<TimerProps> = ({
-  projects = [],
-  className,
-  defaultProjectId,
-}) => {
-  const { data: active, mutate, isLoading } = useSWR<ActiveEntry | null>(
-    '/api/time-entries/active',
-    fetcher,
-  );
+export const Timer: React.FC<TimerProps> = ({ projects = [], className, defaultProjectId }) => {
+  const {
+    data: active,
+    mutate,
+    isLoading,
+  } = useSWR<ActiveEntry | null>('/api/time-entries/active', fetcher);
 
   const [selectedId, setSelectedId] = React.useState<string>(
     defaultProjectId || projects[0]?.id || '',
@@ -81,9 +78,7 @@ export const Timer: React.FC<TimerProps> = ({
   const handleStop = async () => {
     if (!active) return;
     if (elapsed < 60) {
-      const ok = window.confirm(
-        'Таймер идёт меньше минуты. Всё равно остановить?',
-      );
+      const ok = window.confirm('Таймер идёт меньше минуты. Всё равно остановить?');
       if (!ok) return;
     }
     setBusy(true);
@@ -109,9 +104,7 @@ export const Timer: React.FC<TimerProps> = ({
 
   if (active) {
     const projectName =
-      active.project?.name ||
-      projects.find((p) => p.id === active.projectId)?.name ||
-      'Проект';
+      active.project?.name || projects.find((p) => p.id === active.projectId)?.name || 'Проект';
 
     return (
       <Card className={cn('relative overflow-hidden', className)}>
@@ -165,9 +158,7 @@ export const Timer: React.FC<TimerProps> = ({
     <Card className={cn(className)}>
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="flex-1">
-          <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">
-            Таймер
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">Таймер</span>
           <h3
             className="mt-1 text-xl font-medium tracking-editorial text-stone md:text-2xl"
             style={{ fontFamily: 'Fraunces, serif' }}

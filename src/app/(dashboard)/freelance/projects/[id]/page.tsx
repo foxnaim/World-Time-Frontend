@@ -99,10 +99,11 @@ export default function ProjectDetailPage() {
   const month = currentYearMonth();
   const { from, to } = React.useMemo(() => monthRange(month), [month]);
 
-  const { data: project, isLoading, mutate } = useSWR<Project>(
-    id ? `/api/projects/${id}` : null,
-    fetcher,
-  );
+  const {
+    data: project,
+    isLoading,
+    mutate,
+  } = useSWR<Project>(id ? `/api/projects/${id}` : null, fetcher);
   const { data: summary } = useSWR<MonthlySummary>(
     id ? `/api/projects/${id}/monthly-summary?month=${month}` : null,
     fetcher,
@@ -148,16 +149,10 @@ export default function ProjectDetailPage() {
             </Badge>
           </div>
           {project.description && (
-            <p className="mt-3 max-w-2xl text-sm text-stone/80">
-              {project.description}
-            </p>
+            <p className="mt-3 max-w-2xl text-sm text-stone/80">{project.description}</p>
           )}
         </div>
-        <Button
-          variant={edit ? 'ghost' : 'outline'}
-          size="md"
-          onClick={() => setEdit((v) => !v)}
-        >
+        <Button variant={edit ? 'ghost' : 'outline'} size="md" onClick={() => setEdit((v) => !v)}>
           {edit ? 'Закрыть' : 'Редактировать'}
         </Button>
       </header>
@@ -220,9 +215,7 @@ export default function ProjectDetailPage() {
               >
                 {summary ? (summary.totalSeconds / 3600).toFixed(1) : '0.0'}
               </div>
-              <p className="mt-1 text-xs uppercase tracking-[0.22em] text-stone/70">
-                часов
-              </p>
+              <p className="mt-1 text-xs uppercase tracking-[0.22em] text-stone/70">часов</p>
             </Card>
             <Card className="border-coral/40">
               <span className="text-[10px] uppercase tracking-[0.28em] text-coral">
@@ -246,10 +239,7 @@ export default function ProjectDetailPage() {
           </section>
 
           {summary?.insight && (
-            <InsightCard
-              insight={summary.insight}
-              rate={summary.realHourlyRate ?? null}
-            />
+            <InsightCard insight={summary.insight} rate={summary.realHourlyRate ?? null} />
           )}
 
           <section>
@@ -267,9 +257,7 @@ export default function ProjectDetailPage() {
                 >
                   Записей пока нет
                 </p>
-                <p className="mt-2 text-sm text-stone/70">
-                  Запустите таймер, чтобы начать учёт.
-                </p>
+                <p className="mt-2 text-sm text-stone/70">Запустите таймер, чтобы начать учёт.</p>
               </Card>
             ) : (
               <Card className="overflow-x-auto p-0">
@@ -279,9 +267,7 @@ export default function ProjectDetailPage() {
                       <th className="px-6 py-4 font-medium">Дата</th>
                       <th className="px-6 py-4 font-medium">Начало</th>
                       <th className="px-6 py-4 font-medium">Окончание</th>
-                      <th className="px-6 py-4 text-right font-medium">
-                        Длительность
-                      </th>
+                      <th className="px-6 py-4 text-right font-medium">Длительность</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -293,14 +279,14 @@ export default function ProjectDetailPage() {
                           !e.stoppedAt && 'bg-coral/5',
                         )}
                       >
-                        <td className="px-6 py-4 text-sm text-stone">
-                          {formatDate(e.startedAt)}
-                        </td>
+                        <td className="px-6 py-4 text-sm text-stone">{formatDate(e.startedAt)}</td>
                         <td className="px-6 py-4 text-sm text-stone tabular-nums">
                           {formatTime(e.startedAt)}
                         </td>
                         <td className="px-6 py-4 text-sm text-stone tabular-nums">
-                          {e.stoppedAt ? formatTime(e.stoppedAt) : (
+                          {e.stoppedAt ? (
+                            formatTime(e.stoppedAt)
+                          ) : (
                             <span className="text-coral">идёт</span>
                           )}
                         </td>

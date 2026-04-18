@@ -75,11 +75,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="ru"
-      className={`${inter.variable} ${fraunces.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="ru" className={`${inter.variable} ${fraunces.variable}`} suppressHydrationWarning>
       <body className="bg-cream text-stone font-sans antialiased min-h-screen">
         <SkipLink />
         <Providers>

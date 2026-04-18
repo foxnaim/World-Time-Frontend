@@ -43,9 +43,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, fallback }) => {
         <div className="flex min-h-[40vh] items-center justify-center">
           <div className="flex items-center gap-3 text-stone/60">
             <span className="h-1.5 w-1.5 rounded-full bg-coral animate-pulse" />
-            <span className="text-[10px] uppercase tracking-[0.28em]">
-              Проверяем сессию
-            </span>
+            <span className="text-[10px] uppercase tracking-[0.28em]">Проверяем сессию</span>
           </div>
         </div>
       )

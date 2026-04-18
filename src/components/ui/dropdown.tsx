@@ -48,10 +48,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   }, []);
 
   return (
-    <details
-      ref={rootRef}
-      className={cn('relative inline-block group', className)}
-    >
+    <details ref={rootRef} className={cn('relative inline-block group', className)}>
       <summary
         className="list-none cursor-pointer select-none outline-none [&::-webkit-details-marker]:hidden"
         aria-haspopup="menu"
@@ -83,35 +80,31 @@ export const Dropdown: React.FC<DropdownProps> = ({
   );
 };
 
-export interface DropdownItemProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface DropdownItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   danger?: boolean;
 }
 
-export const DropdownItem = React.forwardRef<
-  HTMLButtonElement,
-  DropdownItemProps
->(({ className, danger, children, ...props }, ref) => (
-  <button
-    ref={ref}
-    role="menuitem"
-    data-dropdown-item=""
-    className={cn(
-      'w-full text-left px-3 py-2 rounded-md text-sm',
-      'transition-colors',
-      danger
-        ? 'text-red hover:bg-red/10'
-        : 'text-stone hover:bg-stone/10 hover:text-coral',
-      'focus:outline-none focus:bg-stone/10',
-      className,
-    )}
-    {...props}
-  >
-    {children}
-  </button>
-));
+export const DropdownItem = React.forwardRef<HTMLButtonElement, DropdownItemProps>(
+  ({ className, danger, children, ...props }, ref) => (
+    <button
+      ref={ref}
+      role="menuitem"
+      data-dropdown-item=""
+      className={cn(
+        'w-full text-left px-3 py-2 rounded-md text-sm',
+        'transition-colors',
+        danger ? 'text-red hover:bg-red/10' : 'text-stone hover:bg-stone/10 hover:text-coral',
+        'focus:outline-none focus:bg-stone/10',
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  ),
+);
 DropdownItem.displayName = 'DropdownItem';
 
-export const DropdownSeparator: React.FC<{ className?: string }> = ({
-  className,
-}) => <div className={cn('my-1 h-px bg-stone/20', className)} />;
+export const DropdownSeparator: React.FC<{ className?: string }> = ({ className }) => (
+  <div className={cn('my-1 h-px bg-stone/20', className)} />
+);

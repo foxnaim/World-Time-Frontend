@@ -3,8 +3,10 @@
 import * as React from 'react';
 import { cn } from '@tact/ui';
 
-export interface FormFieldProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'prefix'> {
+export interface FormFieldProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'id' | 'prefix'
+> {
   label: string;
   hint?: string;
   error?: string;
@@ -14,24 +16,14 @@ export interface FormFieldProps
 }
 
 export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
-  (
-    { label, hint, error, id, className, prefix, suffix, ...props },
-    ref,
-  ) => {
+  ({ label, hint, error, id, className, prefix, suffix, ...props }, ref) => {
     const reactId = React.useId();
     const fieldId = id ?? reactId;
-    const describedBy = error
-      ? `${fieldId}-error`
-      : hint
-        ? `${fieldId}-hint`
-        : undefined;
+    const describedBy = error ? `${fieldId}-error` : hint ? `${fieldId}-hint` : undefined;
 
     return (
       <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor={fieldId}
-          className="text-[10px] uppercase tracking-[0.22em] text-stone"
-        >
+        <label htmlFor={fieldId} className="text-[10px] uppercase tracking-[0.22em] text-stone">
           {label}
         </label>
         <div
@@ -40,9 +32,7 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             error ? 'border-red' : 'border-stone/40 focus-within:border-coral',
           )}
         >
-          {prefix && (
-            <span className="text-stone/60 text-sm pb-2">{prefix}</span>
-          )}
+          {prefix && <span className="text-stone/60 text-sm pb-2">{prefix}</span>}
           <input
             id={fieldId}
             ref={ref}
@@ -59,23 +49,14 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             )}
             {...props}
           />
-          {suffix && (
-            <span className="text-stone/60 text-sm pb-2">{suffix}</span>
-          )}
+          {suffix && <span className="text-stone/60 text-sm pb-2">{suffix}</span>}
         </div>
         {error ? (
-          <p
-            id={`${fieldId}-error`}
-            className="text-xs text-red mt-0.5"
-            role="alert"
-          >
+          <p id={`${fieldId}-error`} className="text-xs text-red mt-0.5" role="alert">
             {error}
           </p>
         ) : hint ? (
-          <p
-            id={`${fieldId}-hint`}
-            className="text-xs text-stone/60 mt-0.5"
-          >
+          <p id={`${fieldId}-hint`} className="text-xs text-stone/60 mt-0.5">
             {hint}
           </p>
         ) : null}

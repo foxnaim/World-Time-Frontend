@@ -12,13 +12,7 @@
 
 import { getLocale } from './get-locale';
 import { loadMessages, type Messages } from './messages';
-import {
-  DEFAULT_LOCALE,
-  LOCALES,
-  defaultLocale,
-  locales,
-  type Locale,
-} from './config';
+import { DEFAULT_LOCALE, LOCALES, defaultLocale, locales, type Locale } from './config';
 
 export type RequestI18n = { locale: Locale; messages: Messages };
 

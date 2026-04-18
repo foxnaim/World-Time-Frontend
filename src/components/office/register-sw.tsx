@@ -19,14 +19,12 @@ export function RegisterSw() {
 
     const register = () => {
       if (cancelled) return;
-      navigator.serviceWorker
-        .register('/sw.js', { scope: '/' })
-        .catch((err) => {
-          // Swallow — a failed SW registration must never break the
-          // office terminal. Log for diagnostics only.
-          // eslint-disable-next-line no-console
-          console.warn('[worktime] service worker registration failed', err);
-        });
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((err) => {
+        // Swallow — a failed SW registration must never break the
+        // office terminal. Log for diagnostics only.
+        // eslint-disable-next-line no-console
+        console.warn('[worktime] service worker registration failed', err);
+      });
     };
 
     if (document.readyState === 'complete') {

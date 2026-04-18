@@ -102,10 +102,7 @@ export function Footer() {
                 <li key={s.name} className="flex items-center gap-3">
                   <span
                     aria-hidden
-                    className={
-                      'inline-block h-6 w-6 border border-stone/30 ' +
-                      s.className
-                    }
+                    className={'inline-block h-6 w-6 border border-stone/30 ' + s.className}
                   />
                   <span className="flex flex-col">
                     <span className="text-[10px] uppercase tracking-[0.28em] text-stone">

@@ -10,8 +10,7 @@ import { Footer } from '@/components/landing/footer';
 
 export const metadata: Metadata = {
   title: 'Work Tact — Учёт времени для бизнеса и фрилансеров',
-  description:
-    'QR-сканер, геозоны, анти-фрод и отчёты в Google Sheets. Начните за 5 минут.',
+  description: 'QR-сканер, геозоны, анти-фрод и отчёты в Google Sheets. Начните за 5 минут.',
   alternates: {
     canonical: '/',
   },

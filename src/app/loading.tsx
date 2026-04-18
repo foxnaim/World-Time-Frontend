@@ -14,13 +14,7 @@ export default function Loading() {
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <circle
-          cx="24"
-          cy="24"
-          r="21"
-          stroke="rgba(142, 141, 138, 0.25)"
-          strokeWidth="1.5"
-        />
+        <circle cx="24" cy="24" r="21" stroke="rgba(142, 141, 138, 0.25)" strokeWidth="1.5" />
         <path
           d="M45 24C45 12.4 35.6 3 24 3"
           stroke="#E98074"

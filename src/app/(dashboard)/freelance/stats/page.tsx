@@ -30,8 +30,18 @@ interface RealRate {
 }
 
 const MONTH_LABELS = [
-  'янв', 'фев', 'мар', 'апр', 'май', 'июн',
-  'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
+  'янв',
+  'фев',
+  'мар',
+  'апр',
+  'май',
+  'июн',
+  'июл',
+  'авг',
+  'сен',
+  'окт',
+  'ноя',
+  'дек',
 ];
 
 interface MonthSlot {
@@ -122,9 +132,7 @@ export default function StatsPage() {
       ))}
 
       <header>
-        <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">
-          Фриланс
-        </span>
+        <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">Фриланс</span>
         <h1
           className="mt-2 text-4xl font-medium tracking-editorial text-stone md:text-5xl"
           style={{ fontFamily: 'Fraunces, serif' }}
@@ -150,8 +158,7 @@ export default function StatsPage() {
           data={hoursByMonth.map((h) => ({
             label: h.label,
             value: h.rate,
-            display:
-              h.rate > 0 ? Math.round(h.rate).toLocaleString('ru-RU') : '—',
+            display: h.rate > 0 ? Math.round(h.rate).toLocaleString('ru-RU') : '—',
           }))}
           max={maxRate}
           color="#8E8D8A"
@@ -166,9 +173,7 @@ export default function StatsPage() {
           Реальная ставка по проектам
         </h2>
         {projectList.length === 0 ? (
-          <Card className="py-12 text-center text-sm text-stone/70">
-            Нет активных проектов.
-          </Card>
+          <Card className="py-12 text-center text-sm text-stone/70">Нет активных проектов.</Card>
         ) : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             {projectList.map((p) => (
@@ -181,16 +186,8 @@ export default function StatsPage() {
   );
 }
 
-function ProjectRateHistory({
-  project,
-  months,
-}: {
-  project: Project;
-  months: MonthSlot[];
-}) {
-  const [byMonth, setByMonth] = React.useState<
-    Record<string, MonthlySummary | undefined>
-  >({});
+function ProjectRateHistory({ project, months }: { project: Project; months: MonthSlot[] }) {
+  const [byMonth, setByMonth] = React.useState<Record<string, MonthlySummary | undefined>>({});
   const onData = React.useCallback(
     (projectId: string, key: string, data: MonthlySummary | undefined) => {
       if (projectId !== project.id) return;
@@ -205,32 +202,18 @@ function ProjectRateHistory({
       label: m.label,
       value: s?.realHourlyRate ?? 0,
       display:
-        s?.realHourlyRate != null
-          ? Math.round(s.realHourlyRate).toLocaleString('ru-RU')
-          : '—',
+        s?.realHourlyRate != null ? Math.round(s.realHourlyRate).toLocaleString('ru-RU') : '—',
     };
   });
-  const max = Math.max(
-    1,
-    project.hourlyRate || 0,
-    ...series.map((s) => s.value),
-  );
+  const max = Math.max(1, project.hourlyRate || 0, ...series.map((s) => s.value));
 
   return (
     <Card>
       {months.map((m) => (
-        <ProjectMonthFetcher
-          key={m.key}
-          projectId={project.id}
-          monthKey={m.key}
-          onData={onData}
-        />
+        <ProjectMonthFetcher key={m.key} projectId={project.id} monthKey={m.key} onData={onData} />
       ))}
       <div className="flex items-baseline justify-between">
-        <h4
-          className="text-lg font-medium text-stone"
-          style={{ fontFamily: 'Fraunces, serif' }}
-        >
+        <h4 className="text-lg font-medium text-stone" style={{ fontFamily: 'Fraunces, serif' }}>
           {project.name}
         </h4>
         {project.hourlyRate != null && (
@@ -277,12 +260,7 @@ function BarChart({ data, max, color, refLine }: BarChartProps) {
   const barW = (innerW - barGap * (n - 1)) / Math.max(1, n);
 
   return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      className="w-full"
-      role="img"
-      aria-label="bar chart"
-    >
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full" role="img" aria-label="bar chart">
       <line
         x1={padL}
         x2={w - padR}

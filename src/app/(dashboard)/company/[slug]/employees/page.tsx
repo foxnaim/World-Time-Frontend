@@ -5,10 +5,7 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
-import {
-  EmployeesTable,
-  type Employee,
-} from '@/components/dashboard/company/employees-table';
+import { EmployeesTable, type Employee } from '@/components/dashboard/company/employees-table';
 import { InviteModal } from '@/components/dashboard/company/invite-modal';
 
 type CompanyDetail = {
@@ -20,14 +17,7 @@ type CompanyDetail = {
 type EmployeesResp = { items: Employee[] };
 
 function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        'animate-pulse rounded-md bg-[#D8C3A5]/40',
-        className,
-      )}
-    />
-  );
+  return <div className={cn('animate-pulse rounded-md bg-[#D8C3A5]/40', className)} />;
 }
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
@@ -36,12 +26,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
       <p className="text-sm text-[#E85A4F] tracking-tight">
         Не удалось загрузить. Попробуйте обновить.
       </p>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mt-3"
-        onClick={onRetry}
-      >
+      <Button variant="ghost" size="sm" className="mt-3" onClick={onRetry}>
         Повторить
       </Button>
     </div>
@@ -60,12 +45,7 @@ export default function EmployeesPage() {
   );
   const id = company?.id;
 
-  const {
-    data,
-    error,
-    isLoading,
-    mutate,
-  } = useSWR<EmployeesResp>(
+  const { data, error, isLoading, mutate } = useSWR<EmployeesResp>(
     id ? `/api/companies/${id}/employees` : null,
     fetcher,
   );
@@ -75,9 +55,7 @@ export default function EmployeesPage() {
     if (!query.trim()) return items;
     const q = query.toLowerCase();
     return items.filter(
-      (e) =>
-        e.name.toLowerCase().includes(q) ||
-        (e.position ?? '').toLowerCase().includes(q),
+      (e) => e.name.toLowerCase().includes(q) || (e.position ?? '').toLowerCase().includes(q),
     );
   }, [data, query]);
 

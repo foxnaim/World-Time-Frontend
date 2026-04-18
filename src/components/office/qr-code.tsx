@@ -45,11 +45,7 @@ const DEFAULT_ECL: QrErrorLevel = 'M';
  * We keep the `light` channel fully transparent on top of the explicit
  * `bgColor` wrapper — that way the encoded modules are opaque on any bg.
  */
-function useEncodeOptions(
-  size: number,
-  errorLevel: QrErrorLevel,
-  fgColor: string,
-) {
+function useEncodeOptions(size: number, errorLevel: QrErrorLevel, fgColor: string) {
   return useMemo(
     () => ({
       type: 'svg' as const,
@@ -134,8 +130,7 @@ function QrCodeImpl({
       })
       .catch((err: unknown) => {
         if (cancelled) return;
-        const message =
-          err instanceof Error ? err.message : 'QR generation failed';
+        const message = err instanceof Error ? err.message : 'QR generation failed';
         setError(message);
       });
 

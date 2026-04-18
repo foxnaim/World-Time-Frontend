@@ -40,10 +40,7 @@ function getBaseUrl(): string {
   return '/api';
 }
 
-function buildUrl(
-  path: string,
-  query?: RequestOptions['query'],
-): string {
+function buildUrl(path: string, query?: RequestOptions['query']): string {
   const base = getBaseUrl();
   const p = path.startsWith('/') ? path : `/${path}`;
   const url = `${base}${p}`;
@@ -106,9 +103,7 @@ async function request<T>(
     ) {
       extracted = (data as { message: string }).message;
     }
-    const message =
-      extracted ??
-      (res.statusText || `Request failed with status ${res.status}`);
+    const message = extracted ?? (res.statusText || `Request failed with status ${res.status}`);
     throw new ApiError(message, res.status, url, data);
   }
 
@@ -124,8 +119,7 @@ export const api = {
     request<T>('PATCH', path, { ...options, body }),
   put: <T>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>('PUT', path, { ...options, body }),
-  delete: <T>(path: string, options?: RequestOptions) =>
-    request<T>('DELETE', path, options),
+  delete: <T>(path: string, options?: RequestOptions) => request<T>('DELETE', path, options),
 };
 
 export type Api = typeof api;

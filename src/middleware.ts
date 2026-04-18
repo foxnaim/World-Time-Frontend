@@ -35,9 +35,7 @@ const REFRESH_COOKIE = 'wt_refresh';
 const PROTECTED_PREFIXES = ['/dashboard', '/admin'] as const;
 
 function isProtectedPath(pathname: string): boolean {
-  return PROTECTED_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+  return PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 /**
@@ -105,8 +103,7 @@ async function tryRefresh(req: NextRequest): Promise<RefreshResult | null> {
     // Collect any Set-Cookie headers the backend already attached.
     const setCookies: string[] = [];
     // `getSetCookie` is available in modern edge/Node fetch responses.
-    const g = (res.headers as unknown as { getSetCookie?: () => string[] })
-      .getSetCookie;
+    const g = (res.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie;
     if (typeof g === 'function') {
       setCookies.push(...g.call(res.headers));
     } else {
@@ -172,15 +169,12 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const refreshed = await tryRefresh(req);
   if (refreshed) {
     // Verify the new token before trusting it.
-    const verified = refreshed.accessToken
-      ? await verifyAccessToken(refreshed.accessToken)
-      : null;
+    const verified = refreshed.accessToken ? await verifyAccessToken(refreshed.accessToken) : null;
 
     // If we got a cookie directly from backend (no JSON body), we can't
     // verify without reparsing the Set-Cookie — trust the backend in that
     // narrow case since the cookie came over the server-to-server hop.
-    const trustBackendSetCookie =
-      !refreshed.accessToken && refreshed.setCookies.length > 0;
+    const trustBackendSetCookie = !refreshed.accessToken && refreshed.setCookies.length > 0;
 
     if (verified || trustBackendSetCookie) {
       const res = NextResponse.next();

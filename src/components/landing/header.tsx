@@ -27,10 +27,7 @@ export function Header() {
           Work Tact
         </Link>
 
-        <nav
-          className="hidden md:flex items-center gap-10"
-          aria-label="Основная навигация"
-        >
+        <nav className="hidden md:flex items-center gap-10" aria-label="Основная навигация">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}

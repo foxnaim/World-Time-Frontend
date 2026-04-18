@@ -103,15 +103,7 @@ export const TelegramLogin: React.FC<TelegramLoginProps> = ({
     return () => {
       el.innerHTML = '';
     };
-  }, [
-    botUsername,
-    size,
-    cornerRadius,
-    requestAccess,
-    showUserPhoto,
-    lang,
-    dataAuthUrl,
-  ]);
+  }, [botUsername, size, cornerRadius, requestAccess, showUserPhoto, lang, dataAuthUrl]);
 
   if (!botUsername) {
     return (
@@ -144,8 +136,5 @@ TelegramLogin.displayName = 'TelegramLogin';
  * is loaded without rendering the button (rare). Kept as a convenience.
  */
 export const TelegramWidgetScriptPreload: React.FC = () => (
-  <Script
-    src="https://telegram.org/js/telegram-widget.js?22"
-    strategy="lazyOnload"
-  />
+  <Script src="https://telegram.org/js/telegram-widget.js?22" strategy="lazyOnload" />
 );

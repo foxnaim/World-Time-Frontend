@@ -64,56 +64,54 @@ export const CodeInput: React.FC<CodeInputProps> = ({
     }
   };
 
-  const handleChange =
-    (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const raw = e.target.value.replace(/\D/g, '');
-      if (!raw) {
+  const handleChange = (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '');
+    if (!raw) {
+      const next = [...internal];
+      next[idx] = '';
+      commit(next);
+      return;
+    }
+    // If user pasted multiple digits into one box, distribute
+    if (raw.length > 1) {
+      const chars = raw.split('').slice(0, length - idx);
+      const next = [...internal];
+      chars.forEach((c, i) => {
+        next[idx + i] = c;
+      });
+      commit(next);
+      const target = Math.min(idx + chars.length, length - 1);
+      refs.current[target]?.focus();
+      return;
+    }
+    const next = [...internal];
+    next[idx] = raw;
+    commit(next);
+    if (idx < length - 1) {
+      refs.current[idx + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (idx: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (internal[idx]) {
         const next = [...internal];
         next[idx] = '';
         commit(next);
         return;
       }
-      // If user pasted multiple digits into one box, distribute
-      if (raw.length > 1) {
-        const chars = raw.split('').slice(0, length - idx);
-        const next = [...internal];
-        chars.forEach((c, i) => {
-          next[idx + i] = c;
-        });
-        commit(next);
-        const target = Math.min(idx + chars.length, length - 1);
-        refs.current[target]?.focus();
-        return;
-      }
-      const next = [...internal];
-      next[idx] = raw;
-      commit(next);
-      if (idx < length - 1) {
-        refs.current[idx + 1]?.focus();
-      }
-    };
-
-  const handleKeyDown =
-    (idx: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Backspace') {
-        if (internal[idx]) {
-          const next = [...internal];
-          next[idx] = '';
-          commit(next);
-          return;
-        }
-        if (idx > 0) {
-          refs.current[idx - 1]?.focus();
-          const next = [...internal];
-          next[idx - 1] = '';
-          commit(next);
-        }
-      } else if (e.key === 'ArrowLeft' && idx > 0) {
+      if (idx > 0) {
         refs.current[idx - 1]?.focus();
-      } else if (e.key === 'ArrowRight' && idx < length - 1) {
-        refs.current[idx + 1]?.focus();
+        const next = [...internal];
+        next[idx - 1] = '';
+        commit(next);
       }
-    };
+    } else if (e.key === 'ArrowLeft' && idx > 0) {
+      refs.current[idx - 1]?.focus();
+    } else if (e.key === 'ArrowRight' && idx < length - 1) {
+      refs.current[idx + 1]?.focus();
+    }
+  };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '');
@@ -174,10 +172,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
         role="alert"
         aria-live="polite"
         aria-atomic="true"
-        className={cn(
-          'min-h-[1.25rem] text-xs text-red',
-          !error || !errorMessage ? 'sr-only' : '',
-        )}
+        className={cn('min-h-[1.25rem] text-xs text-red', !error || !errorMessage ? 'sr-only' : '')}
       >
         {error && errorMessage ? errorMessage : ''}
       </div>

@@ -1,11 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-screen w-full bg-cream text-stone overflow-hidden">
       {/* Background concentric rings echoing the Dial */}
@@ -13,13 +9,7 @@ export default function AuthLayout({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 flex items-center justify-center"
       >
-        <svg
-          width="1200"
-          height="1200"
-          viewBox="0 0 1200 1200"
-          className="opacity-60"
-          fill="none"
-        >
+        <svg width="1200" height="1200" viewBox="0 0 1200 1200" className="opacity-60" fill="none">
           {Array.from({ length: 10 }).map((_, i) => {
             const r = 80 + i * 55;
             return (

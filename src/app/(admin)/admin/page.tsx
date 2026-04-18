@@ -27,9 +27,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex flex-col gap-10">
       <div>
-        <div className="text-[10px] uppercase tracking-[0.3em] text-stone-500">
-          Обзор
-        </div>
+        <div className="text-[10px] uppercase tracking-[0.3em] text-stone-500">Обзор</div>
         <h1
           className="mt-2 text-4xl md:text-5xl text-stone-800 tracking-tight"
           style={{ fontFamily: 'Fraunces, serif', fontWeight: 400 }}
@@ -37,33 +35,19 @@ export default function AdminDashboardPage() {
           Платформа целиком
         </h1>
         <p className="mt-2 text-sm text-stone-500 max-w-xl">
-          Кросс-компанейские метрики. Обновляются при каждой загрузке страницы
-          — это операторская панель, не аналитика.
+          Кросс-компанейские метрики. Обновляются при каждой загрузке страницы — это операторская
+          панель, не аналитика.
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatTile
-          label="Пользователи"
-          value={fmt(data?.users)}
-          loading={isLoading}
-          hint="всего"
-        />
-        <StatTile
-          label="Компании"
-          value={fmt(data?.companies)}
-          loading={isLoading}
-          hint="всего"
-        />
+        <StatTile label="Пользователи" value={fmt(data?.users)} loading={isLoading} hint="всего" />
+        <StatTile label="Компании" value={fmt(data?.companies)} loading={isLoading} hint="всего" />
         <StatTile
           label="Сотрудники"
           value={fmt(data?.employees)}
           loading={isLoading}
-          hint={
-            data
-              ? `${fmt(data.activeEmployees)} активных`
-              : 'всего'
-          }
+          hint={data ? `${fmt(data.activeEmployees)} активных` : 'всего'}
         />
         <StatTile
           label="Чек-ины сегодня"

@@ -21,22 +21,16 @@ describe('QrCode', () => {
   });
 
   it('re-renders when the value prop changes', async () => {
-    const { container, rerender } = render(
-      <QrCode value="first" size={120} />,
-    );
+    const { container, rerender } = render(<QrCode value="first" size={120} />);
 
     await waitFor(() => {
-      expect(
-        container.querySelector('[aria-label="QR: first"] svg'),
-      ).not.toBeNull();
+      expect(container.querySelector('[aria-label="QR: first"] svg')).not.toBeNull();
     });
 
     rerender(<QrCode value="second" size={120} />);
 
     await waitFor(() => {
-      expect(
-        container.querySelector('[aria-label="QR: second"] svg'),
-      ).not.toBeNull();
+      expect(container.querySelector('[aria-label="QR: second"] svg')).not.toBeNull();
       // Previous wrapper must be gone — there is only one root at a time.
       expect(container.querySelector('[aria-label="QR: first"]')).toBeNull();
     });

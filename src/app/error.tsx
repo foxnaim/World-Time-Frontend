@@ -22,13 +22,11 @@ export default function Error({
           Что-то пошло не так.
         </h1>
         <p className="editorial-body mb-8 text-pretty">
-          Мы уже получили уведомление. Попробуйте повторить действие —
-          если проблема сохранится, напишите нам.
+          Мы уже получили уведомление. Попробуйте повторить действие — если проблема сохранится,
+          напишите нам.
         </p>
         {error.digest ? (
-          <p className="font-mono text-xs text-stone/70 mb-8">
-            ref: {error.digest}
-          </p>
+          <p className="font-mono text-xs text-stone/70 mb-8">ref: {error.digest}</p>
         ) : null}
         <div className="flex items-center gap-3">
           <button

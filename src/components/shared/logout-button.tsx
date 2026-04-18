@@ -47,13 +47,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
   };
 
   return (
-    <Button
-      variant={variant}
-      size={size}
-      onClick={onLogout}
-      disabled={loading}
-      {...props}
-    >
+    <Button variant={variant} size={size} onClick={onLogout} disabled={loading} {...props}>
       {loading ? 'Выход…' : children}
     </Button>
   );

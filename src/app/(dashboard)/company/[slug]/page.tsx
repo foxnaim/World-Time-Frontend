@@ -6,10 +6,7 @@ import useSWR from 'swr';
 import { Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { KpiCard } from '@/components/dashboard/company/kpi-card';
-import {
-  RankingList,
-  type RankingEntry,
-} from '@/components/dashboard/company/ranking-list';
+import { RankingList, type RankingEntry } from '@/components/dashboard/company/ranking-list';
 
 type CompanyDetail = {
   id: string;
@@ -58,12 +55,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
       <p className="text-sm text-[#E85A4F] tracking-tight">
         Не удалось загрузить. Попробуйте обновить.
       </p>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mt-3"
-        onClick={onRetry}
-      >
+      <Button variant="ghost" size="sm" className="mt-3" onClick={onRetry}>
         Повторить
       </Button>
     </div>
@@ -71,14 +63,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 }
 
 function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        'animate-pulse rounded-md bg-[#D8C3A5]/40',
-        className,
-      )}
-    />
-  );
+  return <div className={cn('animate-pulse rounded-md bg-[#D8C3A5]/40', className)} />;
 }
 
 function formatTime(iso: string) {
@@ -104,10 +89,7 @@ export default function CompanyOverviewPage() {
     data: company,
     error: companyErr,
     mutate: refreshCompany,
-  } = useSWR<CompanyDetail>(
-    slug ? `/api/companies/${slug}` : null,
-    fetcher,
-  );
+  } = useSWR<CompanyDetail>(slug ? `/api/companies/${slug}` : null, fetcher);
 
   const id = company?.id;
 
@@ -163,9 +145,7 @@ export default function CompanyOverviewPage() {
             </h1>
           )}
           {company?.address && (
-            <div className="mt-2 text-sm text-[#8E8D8A]/80">
-              {company.address}
-            </div>
+            <div className="mt-2 text-sm text-[#8E8D8A]/80">{company.address}</div>
           )}
         </div>
       </div>
@@ -203,34 +183,23 @@ export default function CompanyOverviewPage() {
           eyebrow="Punctuality"
           value={(summary?.punctualityScore ?? 0).toFixed(0)}
           suffix="score"
-          delta={delta(
-            summary?.punctualityScore,
-            summary?.prev?.punctualityScore,
-          )}
+          delta={delta(summary?.punctualityScore, summary?.prev?.punctualityScore)}
           loading={!summary && !summaryErr}
           caption="0 – 100"
         />
       </section>
 
-      {summaryErr && (
-        <ErrorState onRetry={() => refreshSummary()} />
-      )}
+      {summaryErr && <ErrorState onRetry={() => refreshSummary()} />}
 
       {/* Two column */}
       <section className="grid gap-6 lg:grid-cols-2">
-        <Card
-          eyebrow="Топ-5 самых пунктуальных"
-          title="Люди месяца"
-        >
+        <Card eyebrow="Топ-5 самых пунктуальных" title="Люди месяца">
           {rankingErr ? (
             <ErrorState onRetry={() => refreshRanking()} />
           ) : !ranking ? (
             <div className="flex flex-col gap-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="grid grid-cols-[auto_1fr_auto] items-center gap-5 py-3"
-                >
+                <div key={i} className="grid grid-cols-[auto_1fr_auto] items-center gap-5 py-3">
                   <Skeleton className="h-8 w-10" />
                   <Skeleton className="h-5 w-full" />
                   <Skeleton className="h-5 w-12" />
@@ -242,10 +211,7 @@ export default function CompanyOverviewPage() {
           )}
         </Card>
 
-        <Card
-          eyebrow="Последние опоздания"
-          title="Лента"
-        >
+        <Card eyebrow="Последние опоздания" title="Лента">
           {lateErr ? (
             <ErrorState onRetry={() => refreshLate()} />
           ) : !late ? (
@@ -256,10 +222,7 @@ export default function CompanyOverviewPage() {
             </div>
           ) : (late.recent?.length ?? 0) === 0 ? (
             <div className="py-10 text-center">
-              <div
-                className="text-3xl text-[#8E8D8A]/70"
-                style={{ fontFamily: 'Fraunces, serif' }}
-              >
+              <div className="text-3xl text-[#8E8D8A]/70" style={{ fontFamily: 'Fraunces, serif' }}>
                 Пусто
               </div>
               <div className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[#8E8D8A]/50">
@@ -273,8 +236,7 @@ export default function CompanyOverviewPage() {
                   key={r.id}
                   className={cn(
                     'grid grid-cols-[auto_1fr_auto] items-center gap-5 py-3.5',
-                    i !== late.recent.length - 1 &&
-                      'border-b border-[#8E8D8A]/15',
+                    i !== late.recent.length - 1 && 'border-b border-[#8E8D8A]/15',
                   )}
                 >
                   <div className="flex flex-col items-start">

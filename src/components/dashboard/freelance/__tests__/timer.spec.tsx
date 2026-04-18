@@ -12,9 +12,7 @@ vi.mock('@/lib/fetcher', () => ({
 
 // Stable elapsed hook result — avoid rAF + real clocks in tests.
 vi.mock('@/hooks/use-elapsed', async () => {
-  const actual = await vi.importActual<typeof import('@/hooks/use-elapsed')>(
-    '@/hooks/use-elapsed',
-  );
+  const actual = await vi.importActual<typeof import('@/hooks/use-elapsed')>('@/hooks/use-elapsed');
   return {
     ...actual,
     useElapsed: () => 125,
@@ -23,9 +21,7 @@ vi.mock('@/hooks/use-elapsed', async () => {
 
 function renderWithSWR(ui: React.ReactElement) {
   return render(
-    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
-      {ui}
-    </SWRConfig>,
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>{ui}</SWRConfig>,
   );
 }
 
@@ -66,8 +62,6 @@ describe('Timer', () => {
     expect(screen.getByText('Project Alpha')).toBeInTheDocument();
     // useElapsed mocked to 125s → 00:02:05.
     expect(screen.getByText('00:02:05')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /Остановить/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Остановить/i })).toBeInTheDocument();
   });
 });

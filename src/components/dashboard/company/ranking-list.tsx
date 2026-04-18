@@ -29,10 +29,7 @@ export function RankingList({ items, max = 5, className }: RankingListProps) {
   if (top.length === 0) {
     return (
       <div className={cn('py-8 text-center', className)}>
-        <div
-          className="text-3xl text-[#8E8D8A]/70"
-          style={{ fontFamily: 'Fraunces, serif' }}
-        >
+        <div className="text-3xl text-[#8E8D8A]/70" style={{ fontFamily: 'Fraunces, serif' }}>
           Пусто
         </div>
         <div className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[#8E8D8A]/50">

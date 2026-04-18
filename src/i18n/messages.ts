@@ -1,8 +1,4 @@
-import {
-  DEFAULT_LOCALE,
-  isLocale,
-  type Locale,
-} from './config';
+import { DEFAULT_LOCALE, isLocale, type Locale } from './config';
 
 /**
  * A locale dictionary is an arbitrarily-nested object whose leaf values are

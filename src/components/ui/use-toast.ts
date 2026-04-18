@@ -16,8 +16,7 @@ export function useToast() {
   const { push, dismiss, toasts } = useToastContext();
 
   return {
-    toast: (title: string, opts?: Partial<Omit<Toast, 'id' | 'title'>>) =>
-      push({ title, ...opts }),
+    toast: (title: string, opts?: Partial<Omit<Toast, 'id' | 'title'>>) => push({ title, ...opts }),
     success: (title: string, opts?: Partial<Omit<Toast, 'id' | 'title' | 'variant'>>) =>
       push({ title, variant: 'success', ...opts }),
     error: (title: string, opts?: Partial<Omit<Toast, 'id' | 'title' | 'variant'>>) =>

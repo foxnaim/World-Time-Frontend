@@ -26,12 +26,7 @@ function buildMonths(count: number) {
   return out;
 }
 
-export function MonthPicker({
-  value,
-  onChange,
-  count = 6,
-  className,
-}: MonthPickerProps) {
+export function MonthPicker({ value, onChange, count = 6, className }: MonthPickerProps) {
   const months = React.useMemo(() => buildMonths(count), [count]);
   const listRef = React.useRef<HTMLDivElement>(null);
 
@@ -72,9 +67,7 @@ export function MonthPicker({
             onClick={() => onChange(m.value)}
             className={cn(
               'px-3 md:px-4 h-8 rounded-full text-[11px] uppercase tracking-[0.22em] transition-colors',
-              active
-                ? 'bg-[#E98074] text-[#EAE7DC]'
-                : 'text-[#8E8D8A] hover:text-[#E98074]',
+              active ? 'bg-[#E98074] text-[#EAE7DC]' : 'text-[#8E8D8A] hover:text-[#E98074]',
             )}
             title={m.long}
           >

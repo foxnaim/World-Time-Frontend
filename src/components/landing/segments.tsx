@@ -11,13 +11,7 @@ function TickIcon() {
       aria-hidden
       className="mt-1 shrink-0 text-coral"
     >
-      <circle
-        cx="8"
-        cy="8"
-        r="7.5"
-        stroke="currentColor"
-        strokeOpacity="0.4"
-      />
+      <circle cx="8" cy="8" r="7.5" stroke="currentColor" strokeOpacity="0.4" />
       <path
         d="M4.5 8.25l2.25 2.25L11.5 5.5"
         stroke="currentColor"
@@ -40,8 +34,7 @@ const COLUMNS: Column[] = [
   {
     eyebrow: '01 — B2B',
     title: 'Для бизнеса',
-    tagline:
-      'Смены, точки, штрафы. Прозрачный учёт для команд от 5 до 5 000 сотрудников.',
+    tagline: 'Смены, точки, штрафы. Прозрачный учёт для команд от 5 до 5 000 сотрудников.',
     bullets: [
       {
         title: 'Ротируемый QR',
@@ -99,11 +92,7 @@ export function Segments() {
           <Reveal
             key={col.title}
             delay={idx * 0.1}
-            className={
-              idx === 0
-                ? 'border-b md:border-b-0 md:border-r border-stone/20'
-                : ''
-            }
+            className={idx === 0 ? 'border-b md:border-b-0 md:border-r border-stone/20' : ''}
           >
             <div className="flex h-full flex-col gap-8 px-6 py-20 md:px-12 md:py-28 lg:px-20">
               <span className="text-[10px] uppercase tracking-[0.32em] text-stone">
@@ -121,9 +110,7 @@ export function Segments() {
                   <li key={b.title} className="flex gap-3">
                     <TickIcon />
                     <div className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-stone">
-                        {b.title}
-                      </span>
+                      <span className="text-sm font-medium text-stone">{b.title}</span>
                       <span className="text-sm text-stone/70">{b.body}</span>
                     </div>
                   </li>

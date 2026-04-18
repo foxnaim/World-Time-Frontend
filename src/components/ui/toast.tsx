@@ -30,13 +30,9 @@ export function useToastContext(): ToastContextValue {
   return ctx;
 }
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
-  const timers = React.useRef<Map<string, ReturnType<typeof setTimeout>>>(
-    new Map(),
-  );
+  const timers = React.useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const dismiss = React.useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -70,10 +66,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const value = React.useMemo(
-    () => ({ toasts, push, dismiss }),
-    [toasts, push, dismiss],
-  );
+  const value = React.useMemo(() => ({ toasts, push, dismiss }), [toasts, push, dismiss]);
 
   return (
     <ToastContext.Provider value={value}>
@@ -131,11 +124,7 @@ const ToastViewport: React.FC<{
                 >
                   {t.title}
                 </p>
-                {t.description && (
-                  <p className="mt-0.5 text-xs text-stone/70">
-                    {t.description}
-                  </p>
-                )}
+                {t.description && <p className="mt-0.5 text-xs text-stone/70">{t.description}</p>}
               </div>
               <button
                 type="button"

@@ -53,8 +53,8 @@ export function HowItWorks() {
               </h2>
             </div>
             <p className="max-w-md text-sm text-stone/70">
-              Четыре шага от QR на стене до готового отчёта. Без ручного свода —
-              бот и таблица делают всё сами.
+              Четыре шага от QR на стене до готового отчёта. Без ручного свода — бот и таблица
+              делают всё сами.
             </p>
           </div>
         </Reveal>
@@ -71,9 +71,7 @@ export function HowItWorks() {
               className={
                 'snap-start shrink-0 w-[80vw] sm:w-[48vw] md:w-[28vw] lg:w-[24vw] flex flex-col gap-4 py-10 pr-6 md:pr-10 ' +
                 (idx === 0 ? 'pl-0' : 'pl-6 md:pl-10') +
-                (idx !== STEPS.length - 1
-                  ? ' border-r border-stone/20'
-                  : '')
+                (idx !== STEPS.length - 1 ? ' border-r border-stone/20' : '')
               }
             >
               <Reveal delay={idx * 0.08}>
@@ -83,9 +81,7 @@ export function HowItWorks() {
                 >
                   {s.n}
                 </span>
-                <h3 className="mt-4 text-xl md:text-2xl font-medium text-stone">
-                  {s.title}
-                </h3>
+                <h3 className="mt-4 text-xl md:text-2xl font-medium text-stone">{s.title}</h3>
                 <p className="mt-3 text-sm text-stone/70">{s.body}</p>
               </Reveal>
             </li>

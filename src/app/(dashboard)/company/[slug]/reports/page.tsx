@@ -56,11 +56,7 @@ function currentYearMonth(): string {
 }
 
 function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn('animate-pulse rounded-md bg-[#D8C3A5]/40', className)}
-    />
-  );
+  return <div className={cn('animate-pulse rounded-md bg-[#D8C3A5]/40', className)} />;
 }
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
@@ -79,10 +75,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 function Empty({ text }: { text?: string }) {
   return (
     <div className="py-14 text-center">
-      <div
-        className="text-3xl text-[#8E8D8A]/70"
-        style={{ fontFamily: 'Fraunces, serif' }}
-      >
+      <div className="text-3xl text-[#8E8D8A]/70" style={{ fontFamily: 'Fraunces, serif' }}>
         Пусто
       </div>
       <div className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[#8E8D8A]/50">
@@ -164,24 +157,15 @@ export default function ReportsPage() {
   const [exportUrl, setExportUrl] = React.useState<string | null>(null);
   const [exportErr, setExportErr] = React.useState<string | null>(null);
 
-  const { data: company } = useSWR<CompanyDetail>(
-    slug ? `/api/companies/${slug}` : null,
-    fetcher,
-  );
+  const { data: company } = useSWR<CompanyDetail>(slug ? `/api/companies/${slug}` : null, fetcher);
   const id = company?.id;
 
   const lateKey =
-    id && tab === 'late'
-      ? `/api/analytics/company/${id}/late-stats?month=${month}`
-      : null;
+    id && tab === 'late' ? `/api/analytics/company/${id}/late-stats?month=${month}` : null;
   const overtimeKey =
-    id && tab === 'overtime'
-      ? `/api/analytics/company/${id}/overtime?month=${month}`
-      : null;
+    id && tab === 'overtime' ? `/api/analytics/company/${id}/overtime?month=${month}` : null;
   const summaryKey =
-    id && tab === 'payouts'
-      ? `/api/analytics/company/${id}/summary?month=${month}`
-      : null;
+    id && tab === 'payouts' ? `/api/analytics/company/${id}/summary?month=${month}` : null;
 
   const lateQ = useSWR<LateStatsResp>(lateKey, fetcher);
   const overtimeQ = useSWR<OvertimeResp>(overtimeKey, fetcher);
@@ -193,15 +177,10 @@ export default function ReportsPage() {
     setExportErr(null);
     setExportUrl(null);
     try {
-      const res = await api.post<ExportResp>(
-        `/api/sheets/export/company/${id}/monthly`,
-        { month },
-      );
+      const res = await api.post<ExportResp>(`/api/sheets/export/company/${id}/monthly`, { month });
       setExportUrl(res.url);
     } catch (err: unknown) {
-      setExportErr(
-        err instanceof Error ? err.message : 'Не удалось экспортировать',
-      );
+      setExportErr(err instanceof Error ? err.message : 'Не удалось экспортировать');
     } finally {
       setExporting(false);
     }
@@ -213,9 +192,7 @@ export default function ReportsPage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/70">
-            Отчёты
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/70">Отчёты</div>
           <h1
             className="mt-2 text-5xl md:text-6xl tracking-tight text-[#8E8D8A]"
             style={{ fontFamily: 'Fraunces, serif', fontWeight: 400 }}
@@ -225,11 +202,7 @@ export default function ReportsPage() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <MonthPicker value={month} onChange={setMonth} />
-          <Button
-            variant="primary"
-            onClick={runExport}
-            disabled={exporting || !id}
-          >
+          <Button variant="primary" onClick={runExport} disabled={exporting || !id}>
             {exporting ? 'Экспорт…' : 'Экспортировать в Google Sheets'}
           </Button>
         </div>
@@ -242,9 +215,7 @@ export default function ReportsPage() {
         >
           {exportUrl ? (
             <>
-              <span className="text-sm text-[#8E8D8A] truncate">
-                Таблица создана
-              </span>
+              <span className="text-sm text-[#8E8D8A] truncate">Таблица создана</span>
               <a
                 href={exportUrl}
                 target="_blank"
@@ -270,9 +241,7 @@ export default function ReportsPage() {
               onClick={() => setTab(t.key)}
               className={cn(
                 'px-5 h-9 rounded-full text-[11px] uppercase tracking-[0.22em] transition-colors',
-                active
-                  ? 'bg-[#E98074] text-[#EAE7DC]'
-                  : 'text-[#8E8D8A] hover:text-[#E98074]',
+                active ? 'bg-[#E98074] text-[#EAE7DC]' : 'text-[#8E8D8A] hover:text-[#E98074]',
               )}
             >
               {t.label}
@@ -436,20 +405,14 @@ export default function ReportsPage() {
                   key: 'base',
                   label: 'Оклад',
                   align: 'right',
-                  render: (r) => (
-                    <span className="tabular-nums">
-                      {nf.format(r.baseSalary)}
-                    </span>
-                  ),
+                  render: (r) => <span className="tabular-nums">{nf.format(r.baseSalary)}</span>,
                 },
                 {
                   key: 'overtime',
                   label: 'Переработки',
                   align: 'right',
                   render: (r) => (
-                    <span className="tabular-nums text-[#E98074]">
-                      +{nf.format(r.overtimePay)}
-                    </span>
+                    <span className="tabular-nums text-[#E98074]">+{nf.format(r.overtimePay)}</span>
                   ),
                 },
                 {
@@ -457,9 +420,7 @@ export default function ReportsPage() {
                   label: 'Удержания',
                   align: 'right',
                   render: (r) => (
-                    <span className="tabular-nums text-[#E85A4F]">
-                      −{nf.format(r.deductions)}
-                    </span>
+                    <span className="tabular-nums text-[#E85A4F]">−{nf.format(r.deductions)}</span>
                   ),
                 },
                 {

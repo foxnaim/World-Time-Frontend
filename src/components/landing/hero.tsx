@@ -64,7 +64,11 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
 };
 
 export function Hero() {
@@ -137,9 +141,7 @@ export function Hero() {
             <span className="text-7xl sm:text-8xl md:text-9xl font-medium leading-[0.9] tracking-tight text-stone">
               WORK TACT
             </span>
-            <span className="mt-2 text-[10px] uppercase tracking-[0.4em] text-coral">
-              2026
-            </span>
+            <span className="mt-2 text-[10px] uppercase tracking-[0.4em] text-coral">2026</span>
           </motion.h1>
         </div>
 
@@ -159,9 +161,7 @@ export function Hero() {
           className="mt-12 flex flex-col items-center gap-2 text-stone/70"
           aria-hidden
         >
-          <span className="text-[10px] uppercase tracking-[0.32em]">
-            scroll
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.32em]">scroll</span>
           <svg
             width="14"
             height="14"
@@ -186,9 +186,7 @@ export function Hero() {
           aria-hidden
         >
           <QrMark size={88} />
-          <span className="text-[10px] uppercase tracking-[0.28em] text-stone">
-            QR / GEO
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.28em] text-stone">QR / GEO</span>
         </motion.div>
 
         {/* right-bottom meta */}
@@ -197,9 +195,7 @@ export function Hero() {
           className="pointer-events-none absolute bottom-10 right-6 hidden md:block md:right-10 text-right"
           aria-hidden
         >
-          <span className="block text-[10px] uppercase tracking-[0.28em] text-stone">
-            No.01
-          </span>
+          <span className="block text-[10px] uppercase tracking-[0.28em] text-stone">No.01</span>
           <span className="block text-[10px] uppercase tracking-[0.28em] text-stone/60">
             Editorial · Swiss
           </span>

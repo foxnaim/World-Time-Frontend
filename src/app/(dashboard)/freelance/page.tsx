@@ -55,9 +55,7 @@ export default function FreelanceOverviewPage() {
   return (
     <div className="flex flex-col gap-10 py-8 md:py-12">
       <header>
-        <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">
-          Фриланс
-        </span>
+        <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">Фриланс</span>
         <h1
           className="mt-2 text-4xl font-medium tracking-editorial text-stone md:text-5xl"
           style={{ fontFamily: 'Fraunces, serif' }}
@@ -69,11 +67,7 @@ export default function FreelanceOverviewPage() {
       <Timer projects={list} />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <Kpi
-          eyebrow="Часов за месяц"
-          value={hours.toFixed(1)}
-          unit="ч"
-        />
+        <Kpi eyebrow="Часов за месяц" value={hours.toFixed(1)} unit="ч" />
         <Kpi
           eyebrow="Активные проекты"
           value={String(activeProjects.length)}
@@ -119,11 +113,7 @@ export default function FreelanceOverviewPage() {
         ) : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {list.slice(0, 6).map((p) => (
-              <ProjectCard
-                key={p.id}
-                project={p}
-                monthHours={p.monthHours || 0}
-              />
+              <ProjectCard key={p.id} project={p} monthHours={p.monthHours || 0} />
             ))}
           </div>
         )}
@@ -155,9 +145,7 @@ function Kpi({
 }) {
   return (
     <Card className={cn(className)}>
-      <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">
-        {eyebrow}
-      </span>
+      <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">{eyebrow}</span>
       <div className="mt-3 flex items-baseline gap-2">
         <span
           className="text-5xl font-medium tracking-editorial text-stone md:text-6xl"
@@ -168,11 +156,7 @@ function Kpi({
         >
           {value}
         </span>
-        {unit && (
-          <span className="text-xs uppercase tracking-[0.22em] text-stone/70">
-            {unit}
-          </span>
-        )}
+        {unit && <span className="text-xs uppercase tracking-[0.22em] text-stone/70">{unit}</span>}
       </div>
     </Card>
   );
@@ -188,8 +172,8 @@ function EmptyProjects() {
         Пока нет проектов
       </h3>
       <p className="max-w-md text-sm text-stone/80">
-        Создайте первый проект, чтобы начать учёт времени и видеть реальную
-        часовую ставку в конце месяца.
+        Создайте первый проект, чтобы начать учёт времени и видеть реальную часовую ставку в конце
+        месяца.
       </p>
       <Link href="/freelance/projects/new">
         <Button variant="primary" size="md">

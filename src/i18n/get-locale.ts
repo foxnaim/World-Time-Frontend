@@ -2,12 +2,7 @@ import 'server-only';
 
 import { cookies, headers } from 'next/headers';
 
-import {
-  DEFAULT_LOCALE,
-  LOCALE_COOKIE,
-  isLocale,
-  type Locale,
-} from './config';
+import { DEFAULT_LOCALE, LOCALE_COOKIE, isLocale, type Locale } from './config';
 
 /**
  * Parse an `Accept-Language` header and return the first supported locale.
@@ -19,9 +14,7 @@ function pickFromAcceptLanguage(header: string | null): Locale | undefined {
     .split(',')
     .map((chunk) => {
       const [tag, qPart] = chunk.trim().split(';');
-      const q = qPart?.startsWith('q=')
-        ? Number.parseFloat(qPart.slice(2))
-        : 1;
+      const q = qPart?.startsWith('q=') ? Number.parseFloat(qPart.slice(2)) : 1;
       return { tag: tag.toLowerCase(), q: Number.isFinite(q) ? q : 1 };
     })
     .sort((a, b) => b.q - a.q);

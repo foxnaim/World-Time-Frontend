@@ -29,9 +29,7 @@ export function Cta() {
           </div>
 
           <Reveal>
-            <span className="text-[10px] uppercase tracking-[0.4em] text-stone">
-              06 — Start
-            </span>
+            <span className="text-[10px] uppercase tracking-[0.4em] text-stone">06 — Start</span>
           </Reveal>
 
           <Reveal delay={0.1}>
@@ -45,8 +43,8 @@ export function Cta() {
 
           <Reveal delay={0.2}>
             <p className="max-w-xl text-sm md:text-base text-stone/80">
-              Подключите первую точку, распечатайте QR и откройте отчёт —
-              без внедренцев и договоров на 40 страниц.
+              Подключите первую точку, распечатайте QR и откройте отчёт — без внедренцев и договоров
+              на 40 страниц.
             </p>
           </Reveal>
 

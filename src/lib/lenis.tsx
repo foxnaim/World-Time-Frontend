@@ -13,7 +13,10 @@ import {
 
 type LenisContextValue = {
   lenis: Lenis | null;
-  scrollTo: (target: string | number | HTMLElement, options?: { offset?: number; duration?: number; immediate?: boolean }) => void;
+  scrollTo: (
+    target: string | number | HTMLElement,
+    options?: { offset?: number; duration?: number; immediate?: boolean },
+  ) => void;
   start: () => void;
   stop: () => void;
 };
@@ -37,9 +40,7 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    );
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     if (prefersReducedMotion.matches) {
       return;

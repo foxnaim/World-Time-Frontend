@@ -13,10 +13,7 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 
-const API_BASE =
-  process.env.API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  'http://localhost:8000';
+const API_BASE = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 /** Cookie name that holds the session JWT. Keep in sync with auth-cookie.ts. */
 const AUTH_COOKIE = 'worktime_session';

@@ -66,11 +66,7 @@ function QRPreview({ text, size = 180 }: { text: string; size?: number }) {
       for (let y = 0; y < 7; y++) {
         for (let x = 0; x < 7; x++) {
           const on =
-            x === 0 ||
-            y === 0 ||
-            x === 6 ||
-            y === 6 ||
-            (x >= 2 && x <= 4 && y >= 2 && y <= 4);
+            x === 0 || y === 0 || x === 6 || y === 6 || (x >= 2 && x <= 4 && y >= 2 && y <= 4);
           g[oy + y][ox + x] = on;
         }
       }
@@ -109,12 +105,7 @@ function QRPreview({ text, size = 180 }: { text: string; size?: number }) {
   );
 }
 
-export function InviteModal({
-  companyId,
-  open,
-  onClose,
-  onInvited,
-}: InviteModalProps) {
+export function InviteModal({ companyId, open, onClose, onInvited }: InviteModalProps) {
   const [form, setForm] = React.useState<FormState>(initial);
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -155,8 +146,7 @@ export function InviteModal({
         position: form.position || undefined,
         role: form.role,
       };
-      if (form.monthlySalary)
-        payload.monthlySalary = Number(form.monthlySalary);
+      if (form.monthlySalary) payload.monthlySalary = Number(form.monthlySalary);
       if (form.hourlyRate) payload.hourlyRate = Number(form.hourlyRate);
       const res = await api.post<InviteResult>(
         `/api/companies/${companyId}/employees/invite`,
@@ -165,8 +155,7 @@ export function InviteModal({
       setResult(res);
       onInvited?.(res);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Не удалось создать приглашение';
+      const message = err instanceof Error ? err.message : 'Не удалось создать приглашение';
       setError(message);
     } finally {
       setSubmitting(false);
@@ -191,10 +180,7 @@ export function InviteModal({
       aria-modal="true"
       aria-labelledby="invite-title"
     >
-      <div
-        className="absolute inset-0 bg-[#8E8D8A]/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-[#8E8D8A]/40 backdrop-blur-sm" onClick={onClose} />
       <Card
         className={cn(
           'relative z-10 w-full max-w-lg !p-0 overflow-hidden',
@@ -289,21 +275,13 @@ export function InviteModal({
               </label>
             </div>
 
-            {error && (
-              <div className="text-xs text-[#E85A4F] tracking-tight">
-                {error}
-              </div>
-            )}
+            {error && <div className="text-xs text-[#E85A4F] tracking-tight">{error}</div>}
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <Button variant="ghost" type="button" onClick={onClose}>
                 Отмена
               </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={submitting}
-              >
+              <Button type="submit" variant="primary" disabled={submitting}>
                 {submitting ? 'Создаём…' : 'Создать приглашение'}
               </Button>
             </div>
@@ -323,11 +301,7 @@ export function InviteModal({
               <div className="flex-1 border border-[#8E8D8A]/25 bg-[#D8C3A5]/20 rounded-full px-4 h-10 flex items-center text-sm text-[#8E8D8A] truncate">
                 {result.link}
               </div>
-              <Button
-                variant={copied ? 'outline' : 'primary'}
-                type="button"
-                onClick={copyLink}
-              >
+              <Button variant={copied ? 'outline' : 'primary'} type="button" onClick={copyLink}>
                 {copied ? 'Скопировано' : 'Копировать'}
               </Button>
             </div>

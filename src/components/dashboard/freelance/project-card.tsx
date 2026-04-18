@@ -42,10 +42,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   monthTarget = 160,
   className,
 }) => {
-  const { data: active, mutate } = useSWR<ActiveEntry | null>(
-    '/api/time-entries/active',
-    fetcher,
-  );
+  const { data: active, mutate } = useSWR<ActiveEntry | null>('/api/time-entries/active', fetcher);
   const [busy, setBusy] = React.useState(false);
   const [warn, setWarn] = React.useState(false);
 
@@ -83,10 +80,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     <Card className={cn('flex h-full flex-col justify-between gap-5', className)}>
       <div>
         <div className="flex items-start justify-between gap-3">
-          <Link
-            href={`/freelance/projects/${project.id}`}
-            className="flex-1 no-underline"
-          >
+          <Link href={`/freelance/projects/${project.id}`} className="flex-1 no-underline">
             <h4
               className="text-xl font-medium tracking-editorial text-stone"
               style={{ fontFamily: 'Fraunces, serif' }}
@@ -96,9 +90,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           </Link>
           <Badge variant={variant}>{label}</Badge>
         </div>
-        <p className="mt-1 text-xs uppercase tracking-[0.22em] text-stone/70">
-          {rateLine}
-        </p>
+        <p className="mt-1 text-xs uppercase tracking-[0.22em] text-stone/70">{rateLine}</p>
 
         <div className="mt-5">
           <div className="flex items-baseline justify-between">
@@ -132,26 +124,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           <div className="rounded-xl border border-coral/40 bg-coral/10 p-3 text-xs text-stone">
             <p>
               У тебя уже идёт таймер на{' '}
-              <span className="font-medium">
-                {active?.project?.name || 'другом проекте'}
-              </span>
-              .
+              <span className="font-medium">{active?.project?.name || 'другом проекте'}</span>.
             </p>
             <div className="mt-2 flex gap-2">
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={() => onStart(true)}
-                disabled={busy}
-              >
+              <Button size="sm" variant="primary" onClick={() => onStart(true)} disabled={busy}>
                 Переключить
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setWarn(false)}
-                disabled={busy}
-              >
+              <Button size="sm" variant="ghost" onClick={() => setWarn(false)} disabled={busy}>
                 Отмена
               </Button>
             </div>

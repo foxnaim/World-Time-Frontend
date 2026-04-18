@@ -69,10 +69,9 @@ export function LoginView({
       setSubmitting(true);
       setError(null);
       try {
-        const res = await api.post<BotLoginResponse>(
-          '/auth/telegram/bot-login',
-          { oneTimeCode: value },
-        );
+        const res = await api.post<BotLoginResponse>('/auth/telegram/bot-login', {
+          oneTimeCode: value,
+        });
         setAuthCookies({
           accessToken: res.accessToken,
           refreshToken: res.refreshToken,
@@ -82,8 +81,7 @@ export function LoginView({
         router.push(next);
         router.refresh();
       } catch (e) {
-        const msg =
-          e instanceof Error ? e.message : 'Не удалось войти. Проверьте код.';
+        const msg = e instanceof Error ? e.message : 'Не удалось войти. Проверьте код.';
         setError(msg);
         toast.error('Неверный код', { description: msg });
         setCode('');
@@ -111,8 +109,7 @@ export function LoginView({
         router.push(next);
         router.refresh();
       } catch (e) {
-        const msg =
-          e instanceof Error ? e.message : 'Не удалось подтвердить Telegram';
+        const msg = e instanceof Error ? e.message : 'Не удалось подтвердить Telegram';
         toast.error('Ошибка Telegram', { description: msg });
       } finally {
         setSubmitting(false);
@@ -143,9 +140,7 @@ export function LoginView({
             {subtitle.split('→').map((chunk, i, arr) => (
               <React.Fragment key={i}>
                 {chunk.trim()}
-                {i < arr.length - 1 && (
-                  <span className="mx-2 text-coral">→</span>
-                )}
+                {i < arr.length - 1 && <span className="mx-2 text-coral">→</span>}
               </React.Fragment>
             ))}
           </p>
@@ -218,16 +213,10 @@ export function LoginView({
         description="Подтвердите вход через официальный виджет Telegram."
       >
         <div className="flex flex-col items-center gap-4 py-2">
-          <TelegramLogin
-            onAuth={onWidgetAuth}
-            size="large"
-            cornerRadius={12}
-            lang="ru"
-          />
+          <TelegramLogin onAuth={onWidgetAuth} size="large" cornerRadius={12} lang="ru" />
           <p className="text-[10px] uppercase tracking-[0.22em] text-stone/50 text-center">
             Если виджет не появился — проверьте, что у бота включён
-            <span className="mx-1 text-coral">domain</span>
-            в BotFather.
+            <span className="mx-1 text-coral">domain</span>в BotFather.
           </p>
         </div>
       </Modal>

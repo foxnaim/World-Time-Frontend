@@ -41,9 +41,7 @@ function connectionCopy(state: SseConnectionState): string | null {
  */
 export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
   const displayKey =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('key')
-      : null;
+    typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('key') : null;
 
   const sseUrl = useMemo(() => {
     const base = `/api/checkin/qr/${encodeURIComponent(companyId)}/stream`;
@@ -77,9 +75,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
   const rotationMs = rotationSec * 1000;
 
   const remainingMs =
-    expiresMs !== null
-      ? Math.max(0, Math.min(rotationMs, expiresMs - tickNow))
-      : rotationMs;
+    expiresMs !== null ? Math.max(0, Math.min(rotationMs, expiresMs - tickNow)) : rotationMs;
 
   const remainingSec = Math.ceil(remainingMs / 1000);
   // Dial fills with coral and drains counterclockwise → progress represents
@@ -110,9 +106,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
       {/* Top bar: company (left) / clock (right) */}
       <header className="absolute inset-x-0 top-0 flex items-start justify-between px-10 pt-10">
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-[0.32em] text-stone/70">
-            Компания
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.32em] text-stone/70">Компания</span>
           <span
             className="mt-1 text-sm font-medium text-[#2a2927]"
             style={{ letterSpacing: '0.02em' }}
@@ -126,9 +120,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
       {/* Main stage: heading → QR → dial */}
       <section className="absolute inset-0 flex flex-col items-center justify-center px-6">
         <div className="flex flex-col items-center">
-          <span className="editorial-eyebrow text-stone/70">
-            Work Tact · Checkpoint
-          </span>
+          <span className="editorial-eyebrow text-stone/70">Work Tact · Checkpoint</span>
           <h1
             className="mt-3 text-center text-6xl md:text-7xl lg:text-8xl leading-[0.95] text-[#2a2927]"
             style={{
@@ -152,10 +144,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
           aria-label={qrAriaLabel}
         >
           <div className="relative">
-            <QrCode
-              value={qrValue || `worktime:${companyId}:bootstrap`}
-              size={520}
-            />
+            <QrCode value={qrValue || `worktime:${companyId}:bootstrap`} size={520} />
             {!data && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <span
@@ -170,12 +159,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
         </div>
 
         <div className="mt-8 flex flex-col items-center">
-          <Dial
-            size={132}
-            progress={progress}
-            ticks={30}
-            indicatorColor="coral"
-          />
+          <Dial size={132} progress={progress} ticks={30} indicatorColor="coral" />
           <div className="mt-3 flex items-baseline gap-2 tabular-nums">
             <span
               className="text-3xl text-[#2a2927]"
@@ -206,9 +190,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
         }
       >
         {banner ? (
-          <span className="text-[11px] uppercase tracking-[0.24em] text-red">
-            {banner}
-          </span>
+          <span className="text-[11px] uppercase tracking-[0.24em] text-red">{banner}</span>
         ) : (
           <span>{`Состояние соединения: ${stateLabel}`}</span>
         )}
@@ -242,11 +224,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
 function TickRuler() {
   const ticks = Array.from({ length: 48 });
   return (
-    <div
-      className="flex items-end gap-[4px]"
-      aria-hidden="true"
-      style={{ height: 14 }}
-    >
+    <div className="flex items-end gap-[4px]" aria-hidden="true" style={{ height: 14 }}>
       {ticks.map((_, i) => {
         const isMajor = i % 6 === 0;
         return (

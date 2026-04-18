@@ -69,12 +69,7 @@ export default function SettingsPage() {
         <p className="text-sm text-[#E85A4F] tracking-tight">
           Не удалось загрузить. Попробуйте обновить.
         </p>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mt-3"
-          onClick={() => mutate()}
-        >
+        <Button variant="ghost" size="sm" className="mt-3" onClick={() => mutate()}>
           Повторить
         </Button>
       </div>
@@ -108,17 +103,12 @@ export default function SettingsPage() {
         workEndHour: form.workEndHour ?? null,
         timezone: form.timezone ?? null,
       };
-      const updated = await api.patch<CompanyDetail>(
-        `/api/companies/${form.id}`,
-        payload,
-      );
+      const updated = await api.patch<CompanyDetail>(`/api/companies/${form.id}`, payload);
       setForm(updated);
       mutate(updated, { revalidate: false });
       setSavedAt(Date.now());
     } catch (err: unknown) {
-      setSaveErr(
-        err instanceof Error ? err.message : 'Не удалось сохранить',
-      );
+      setSaveErr(err instanceof Error ? err.message : 'Не удалось сохранить');
     } finally {
       setSaving(false);
     }
@@ -130,9 +120,7 @@ export default function SettingsPage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/70">
-            Настройки
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/70">Настройки</div>
           <h1
             className="mt-2 text-5xl md:text-6xl tracking-tight text-[#8E8D8A]"
             style={{ fontFamily: 'Fraunces, serif', fontWeight: 400 }}
@@ -146,9 +134,7 @@ export default function SettingsPage() {
               Сохранено
             </span>
           )}
-          {saveErr && (
-            <span className="text-[11px] text-[#E85A4F]">{saveErr}</span>
-          )}
+          {saveErr && <span className="text-[11px] text-[#E85A4F]">{saveErr}</span>}
           <Button onClick={save} disabled={saving}>
             {saving ? 'Сохранение…' : 'Сохранить'}
           </Button>
@@ -161,19 +147,11 @@ export default function SettingsPage() {
             <span className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/70">
               Название
             </span>
-            <Input
-              value={form.name ?? ''}
-              onChange={(e) => update('name', e.target.value)}
-            />
+            <Input value={form.name ?? ''} onChange={(e) => update('name', e.target.value)} />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/70">
-              Адрес
-            </span>
-            <Input
-              value={form.address ?? ''}
-              onChange={(e) => update('address', e.target.value)}
-            />
+            <span className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/70">Адрес</span>
+            <Input value={form.address ?? ''} onChange={(e) => update('address', e.target.value)} />
           </label>
         </div>
       </Card>
@@ -188,9 +166,7 @@ export default function SettingsPage() {
               type="number"
               step="0.000001"
               value={form.lat ?? ''}
-              onChange={(e) =>
-                update('lat', e.target.value ? Number(e.target.value) : null)
-              }
+              onChange={(e) => update('lat', e.target.value ? Number(e.target.value) : null)}
               placeholder="43.238949"
             />
           </label>
@@ -202,9 +178,7 @@ export default function SettingsPage() {
               type="number"
               step="0.000001"
               value={form.lng ?? ''}
-              onChange={(e) =>
-                update('lng', e.target.value ? Number(e.target.value) : null)
-              }
+              onChange={(e) => update('lng', e.target.value ? Number(e.target.value) : null)}
               placeholder="76.889709"
             />
           </label>
@@ -264,21 +238,15 @@ export default function SettingsPage() {
             <Input
               type="time"
               value={hourToTimeStr(form.workStartHour)}
-              onChange={(e) =>
-                update('workStartHour', timeStrToHour(e.target.value))
-              }
+              onChange={(e) => update('workStartHour', timeStrToHour(e.target.value))}
             />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/70">
-              Конец
-            </span>
+            <span className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/70">Конец</span>
             <Input
               type="time"
               value={hourToTimeStr(form.workEndHour)}
-              onChange={(e) =>
-                update('workEndHour', timeStrToHour(e.target.value))
-              }
+              onChange={(e) => update('workEndHour', timeStrToHour(e.target.value))}
             />
           </label>
           <label className="flex flex-col gap-1.5">

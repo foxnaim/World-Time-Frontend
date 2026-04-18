@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { api, ApiError } from './api';
 
 // Helper to build a minimal fetch Response mock.
-function jsonResponse(body: unknown, init: Partial<ResponseInit> & { ok?: boolean; status?: number } = {}) {
+function jsonResponse(
+  body: unknown,
+  init: Partial<ResponseInit> & { ok?: boolean; status?: number } = {},
+) {
   const status = init.status ?? 200;
   return {
     ok: init.ok ?? (status >= 200 && status < 300),
@@ -64,9 +67,11 @@ describe('api', () => {
   });
 
   it('throws ApiError on non-ok responses', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      jsonResponse({ message: 'nope' }, { ok: false, status: 400, statusText: 'Bad Request' }),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        jsonResponse({ message: 'nope' }, { ok: false, status: 400, statusText: 'Bad Request' }),
+      );
     globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     await expect(api.get('/bad')).rejects.toBeInstanceOf(ApiError);

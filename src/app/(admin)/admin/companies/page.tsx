@@ -64,9 +64,7 @@ export default function AdminCompaniesPage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-end justify-between gap-6 flex-wrap">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-stone-500">
-            Каталог
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-stone-500">Каталог</div>
           <h1
             className="mt-2 text-4xl md:text-5xl text-stone-800 tracking-tight"
             style={{ fontFamily: 'Fraunces, serif', fontWeight: 400 }}
@@ -104,21 +102,30 @@ export default function AdminCompaniesPage() {
           <tbody>
             {isLoading && !data && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-stone-500 text-xs uppercase tracking-[0.22em]">
+                <td
+                  colSpan={5}
+                  className="px-4 py-10 text-center text-stone-500 text-xs uppercase tracking-[0.22em]"
+                >
                   Загрузка…
                 </td>
               </tr>
             )}
             {error && !data && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-red-600 text-xs uppercase tracking-[0.22em]">
+                <td
+                  colSpan={5}
+                  className="px-4 py-10 text-center text-red-600 text-xs uppercase tracking-[0.22em]"
+                >
                   Ошибка загрузки
                 </td>
               </tr>
             )}
             {data?.items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-stone-500 text-xs uppercase tracking-[0.22em]">
+                <td
+                  colSpan={5}
+                  className="px-4 py-10 text-center text-stone-500 text-xs uppercase tracking-[0.22em]"
+                >
                   Ничего не найдено
                 </td>
               </tr>
@@ -128,18 +135,17 @@ export default function AdminCompaniesPage() {
                 key={c.id}
                 className="border-b border-stone-200 last:border-b-0 hover:bg-stone-200/50"
               >
-                <td className="px-4 py-3 text-stone-800 tracking-tight" style={{ fontFamily: 'Fraunces, serif' }}>
+                <td
+                  className="px-4 py-3 text-stone-800 tracking-tight"
+                  style={{ fontFamily: 'Fraunces, serif' }}
+                >
                   {c.name}
                 </td>
-                <td className="px-4 py-3 text-stone-500 font-mono text-xs">
-                  /{c.slug}
-                </td>
+                <td className="px-4 py-3 text-stone-500 font-mono text-xs">/{c.slug}</td>
                 <td className="px-4 py-3 text-stone-700 tabular-nums text-right">
                   {c.employeeCount}
                 </td>
-                <td className="px-4 py-3 text-stone-500">
-                  {formatDate(c.createdAt)}
-                </td>
+                <td className="px-4 py-3 text-stone-500">{formatDate(c.createdAt)}</td>
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/admin/companies/${c.id}`}

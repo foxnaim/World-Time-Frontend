@@ -14,9 +14,7 @@ describe('CodeInput', () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     const onComplete = vi.fn();
-    render(
-      <CodeInput autoFocus={false} onChange={onChange} onComplete={onComplete} />,
-    );
+    render(<CodeInput autoFocus={false} onChange={onChange} onComplete={onComplete} />);
 
     const boxes = screen.getAllByRole('textbox') as HTMLInputElement[];
     // Focus the first box, then type 6 digits; focus auto-advances on change.

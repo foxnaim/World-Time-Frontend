@@ -22,8 +22,7 @@ export interface EmployeesTableProps {
   className?: string;
 }
 
-const GRID_COLS =
-  'grid grid-cols-[1.6fr_1.2fr_1fr_0.9fr_0.7fr_0.9fr_0.4fr]';
+const GRID_COLS = 'grid grid-cols-[1.6fr_1.2fr_1fr_0.9fr_0.7fr_0.9fr_0.4fr]';
 
 function initials(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -37,18 +36,11 @@ function formatCurrency(v?: number | null, perHour = false) {
 }
 
 function StatusBadge({ status }: { status: Employee['status'] }) {
-  if (status === 'ACTIVE')
-    return <Badge variant="coral">активен</Badge>;
+  if (status === 'ACTIVE') return <Badge variant="coral">активен</Badge>;
   return <Badge variant="red">неактивен</Badge>;
 }
 
-function RowMenu({
-  row,
-  onMenu,
-}: {
-  row: Employee;
-  onMenu?: EmployeesTableProps['onMenu'];
-}) {
+function RowMenu({ row, onMenu }: { row: Employee; onMenu?: EmployeesTableProps['onMenu'] }) {
   const [open, setOpen] = React.useState(false);
   return (
     <div className="relative">
@@ -106,15 +98,8 @@ function RowMenu({
 export function EmployeesTable({ rows, onMenu, className }: EmployeesTableProps) {
   if (rows.length === 0) {
     return (
-      <div
-        className={cn('py-16 text-center', className)}
-        role="region"
-        aria-label="Сотрудники"
-      >
-        <div
-          className="text-4xl text-[#8E8D8A]/70"
-          style={{ fontFamily: 'Fraunces, serif' }}
-        >
+      <div className={cn('py-16 text-center', className)} role="region" aria-label="Сотрудники">
+        <div className="text-4xl text-[#8E8D8A]/70" style={{ fontFamily: 'Fraunces, serif' }}>
           Пусто
         </div>
         <div className="mt-2 text-xs uppercase tracking-[0.24em] text-[#8E8D8A]/60">
@@ -125,11 +110,7 @@ export function EmployeesTable({ rows, onMenu, className }: EmployeesTableProps)
   }
 
   return (
-    <div
-      role="region"
-      aria-label="Сотрудники"
-      className={cn('w-full', className)}
-    >
+    <div role="region" aria-label="Сотрудники" className={cn('w-full', className)}>
       <table className="w-full border-collapse" aria-label="Сотрудники">
         <thead>
           <tr
@@ -196,9 +177,7 @@ export function EmployeesTable({ rows, onMenu, className }: EmployeesTableProps)
                   </span>
                 </span>
               </th>
-              <td className="text-sm text-[#8E8D8A]/90 truncate">
-                {r.position || '—'}
-              </td>
+              <td className="text-sm text-[#8E8D8A]/90 truncate">{r.position || '—'}</td>
               <td className="text-sm tabular-nums text-[#8E8D8A]">
                 {r.monthlySalary
                   ? formatCurrency(r.monthlySalary)
@@ -210,37 +189,26 @@ export function EmployeesTable({ rows, onMenu, className }: EmployeesTableProps)
               <td className="text-center">
                 {r.checkedInToday ? (
                   <>
-                    <span
-                      className="text-[#E98074] text-lg leading-none"
-                      aria-hidden="true"
-                    >
+                    <span className="text-[#E98074] text-lg leading-none" aria-hidden="true">
                       ✓
                     </span>
                     <span className="sr-only">Отметился сегодня</span>
                   </>
                 ) : (
                   <>
-                    <span
-                      className="text-[#E85A4F] text-lg leading-none"
-                      aria-hidden="true"
-                    >
+                    <span className="text-[#E85A4F] text-lg leading-none" aria-hidden="true">
                       ×
                     </span>
                     <span className="sr-only">Не отметился сегодня</span>
                   </>
                 )}
               </td>
-              <td
-                className="text-right tabular-nums"
-                style={{ fontFamily: 'Fraunces, serif' }}
-              >
+              <td className="text-right tabular-nums" style={{ fontFamily: 'Fraunces, serif' }}>
                 {r.lateCountMonth != null ? (
                   <span
                     className={cn(
                       'text-xl',
-                      (r.lateCountMonth ?? 0) > 0
-                        ? 'text-[#E85A4F]'
-                        : 'text-[#8E8D8A]/70',
+                      (r.lateCountMonth ?? 0) > 0 ? 'text-[#E85A4F]' : 'text-[#8E8D8A]/70',
                     )}
                   >
                     {r.lateCountMonth}

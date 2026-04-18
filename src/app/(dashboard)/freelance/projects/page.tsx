@@ -36,9 +36,7 @@ export default function ProjectsListPage() {
     <div className="flex flex-col gap-8 py-8 md:py-12">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">
-            Фриланс
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.28em] text-stone/70">Фриланс</span>
           <h1
             className="mt-2 text-4xl font-medium tracking-editorial text-stone md:text-5xl"
             style={{ fontFamily: 'Fraunces, serif' }}
@@ -73,15 +71,9 @@ export default function ProjectsListPage() {
               {list.map((p) => {
                 const status = p.status || 'ACTIVE';
                 return (
-                  <tr
-                    key={p.id}
-                    className="hairline-b transition-colors hover:bg-sand/30"
-                  >
+                  <tr key={p.id} className="hairline-b transition-colors hover:bg-sand/30">
                     <Td>
-                      <Link
-                        href={`/freelance/projects/${p.id}`}
-                        className="no-underline"
-                      >
+                      <Link href={`/freelance/projects/${p.id}`} className="no-underline">
                         <span
                           className="text-base font-medium text-stone hover:text-coral"
                           style={{ fontFamily: 'Fraunces, serif' }}
@@ -120,17 +112,11 @@ export default function ProjectsListPage() {
 }
 
 function Th({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <th className={cn('px-6 py-4 font-medium', className)}>{children}</th>
-  );
+  return <th className={cn('px-6 py-4 font-medium', className)}>{children}</th>;
 }
 
 function Td({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <td className={cn('px-6 py-4 align-middle text-sm text-stone', className)}>
-      {children}
-    </td>
-  );
+  return <td className={cn('px-6 py-4 align-middle text-sm text-stone', className)}>{children}</td>;
 }
 
 function ListSkeleton() {

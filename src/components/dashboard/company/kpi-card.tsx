@@ -44,15 +44,8 @@ export function KpiCard({
   }
 
   return (
-    <Card
-      className={cn(
-        'flex flex-col justify-between min-h-[180px] p-6 md:p-7',
-        className,
-      )}
-    >
-      <div className="text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/80">
-        {eyebrow}
-      </div>
+    <Card className={cn('flex flex-col justify-between min-h-[180px] p-6 md:p-7', className)}>
+      <div className="text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/80">{eyebrow}</div>
       <div className="mt-5 flex items-baseline gap-2">
         {loading ? (
           <span className="inline-block h-12 w-24 rounded-md bg-[#D8C3A5]/40 animate-pulse" />
@@ -77,12 +70,7 @@ export function KpiCard({
           {caption ?? 'за месяц'}
         </span>
         {typeof delta === 'number' && (
-          <span
-            className={cn(
-              'text-[11px] uppercase tracking-[0.22em]',
-              deltaColor,
-            )}
-          >
+          <span className={cn('text-[11px] uppercase tracking-[0.22em]', deltaColor)}>
             {deltaArrow} {formatDelta(delta)}
           </span>
         )}

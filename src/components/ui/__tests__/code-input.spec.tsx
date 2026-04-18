@@ -50,14 +50,7 @@ describe('CodeInput', () => {
     boxes[0].focus();
     await user.paste('987654');
 
-    expect(boxes.map((b) => b.value)).toEqual([
-      '9',
-      '8',
-      '7',
-      '6',
-      '5',
-      '4',
-    ]);
+    expect(boxes.map((b) => b.value)).toEqual(['9', '8', '7', '6', '5', '4']);
     expect(onChange).toHaveBeenLastCalledWith('987654');
   });
 

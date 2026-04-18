@@ -16,21 +16,11 @@ export interface InsightCardProps {
  * and a small Dial indicator showing where the user's rate sits on the
  * market scale.
  */
-export const InsightCard: React.FC<InsightCardProps> = ({
-  insight,
-  rate,
-  className,
-}) => {
+export const InsightCard: React.FC<InsightCardProps> = ({ insight, rate, className }) => {
   const progress = rate != null ? Math.max(0, Math.min(1, rate / 5000)) : 0;
 
   return (
-    <Card
-      className={cn(
-        'relative overflow-hidden p-0',
-        'border-stone/20',
-        className,
-      )}
-    >
+    <Card className={cn('relative overflow-hidden p-0', 'border-stone/20', className)}>
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-coral" aria-hidden />
       <div className="flex flex-col gap-6 p-6 pl-8 md:flex-row md:items-center md:p-8 md:pl-10">
         <div className="flex-1">
@@ -43,9 +33,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
           >
             {rate != null ? `${Math.round(rate)} ₽/час` : 'Пока нет данных'}
           </h3>
-          <p className="mt-3 text-sm leading-relaxed text-stone/90 md:text-base">
-            {insight}
-          </p>
+          <p className="mt-3 text-sm leading-relaxed text-stone/90 md:text-base">{insight}</p>
           {rate != null && (
             <div className="mt-5">
               <RateScale rate={rate} />

@@ -3,12 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, useTransition } from 'react';
 
-import {
-  LOCALES,
-  LOCALE_COOKIE,
-  localeNames,
-  type Locale,
-} from '@/i18n/config';
+import { LOCALES, LOCALE_COOKIE, localeNames, type Locale } from '@/i18n/config';
 
 type Props = {
   /** Active locale from the server render. */
@@ -67,9 +62,7 @@ export function LocaleSwitcher({ activeLocale, className }: Props) {
             disabled={pending}
             className={
               'rounded-full px-2.5 py-1 transition-colors ' +
-              (isActive
-                ? 'bg-neutral-900 text-white'
-                : 'text-neutral-500 hover:text-neutral-900')
+              (isActive ? 'bg-neutral-900 text-white' : 'text-neutral-500 hover:text-neutral-900')
             }
           >
             {localeNames[locale]}

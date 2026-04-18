@@ -19,12 +19,7 @@ const TIERS: Tier[] = [
     name: 'Free',
     price: '0 ₽',
     priceNote: 'до 5 сотрудников',
-    features: [
-      'Одна точка с QR',
-      'Базовый геофенс',
-      'Отчёт в CSV',
-      'Email-поддержка',
-    ],
+    features: ['Одна точка с QR', 'Базовый геофенс', 'Отчёт в CSV', 'Email-поддержка'],
     cta: { label: 'Начать бесплатно', href: '/register' },
   },
   {
@@ -78,8 +73,8 @@ export function Pricing() {
               </h2>
             </div>
             <p className="max-w-sm text-sm text-stone/70">
-              Без скрытых строк. Пересмотрите план в любой момент — мы пересчитаем
-              только ту разницу, которую вы реально прожили.
+              Без скрытых строк. Пересмотрите план в любой момент — мы пересчитаем только ту
+              разницу, которую вы реально прожили.
             </p>
           </div>
         </Reveal>
@@ -90,9 +85,7 @@ export function Pricing() {
               key={t.name}
               delay={idx * 0.08}
               className={
-                idx !== TIERS.length - 1
-                  ? 'border-b md:border-b-0 md:border-r border-stone/20'
-                  : ''
+                idx !== TIERS.length - 1 ? 'border-b md:border-b-0 md:border-r border-stone/20' : ''
               }
             >
               <div className="flex h-full flex-col gap-8 px-6 md:px-10 py-12 md:py-16">
@@ -132,7 +125,10 @@ export function Pricing() {
 
                 <ul className="flex flex-col gap-3 text-sm text-stone/80">
                   {t.features.map((f) => (
-                    <li key={f} className="flex gap-3 border-t border-stone/15 pt-3 first:border-t-0 first:pt-0">
+                    <li
+                      key={f}
+                      className="flex gap-3 border-t border-stone/15 pt-3 first:border-t-0 first:pt-0"
+                    >
                       <span
                         aria-hidden
                         className="mt-1 inline-block h-[1px] w-4 shrink-0 bg-stone/40"
@@ -143,11 +139,7 @@ export function Pricing() {
                 </ul>
 
                 <div className="mt-auto pt-4">
-                  <Button
-                    variant={t.accent ? 'primary' : 'ghost'}
-                    size="md"
-                    asChild
-                  >
+                  <Button variant={t.accent ? 'primary' : 'ghost'} size="md" asChild>
                     <Link href={t.cta.href}>{t.cta.label}</Link>
                   </Button>
                 </div>

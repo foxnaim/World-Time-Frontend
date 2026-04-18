@@ -21,13 +21,7 @@ function currentYearMonth(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function MonthBadge({
-  month,
-  onChange,
-}: {
-  month: string;
-  onChange: (m: string) => void;
-}) {
+function MonthBadge({ month, onChange }: { month: string; onChange: (m: string) => void }) {
   const [open, setOpen] = React.useState(false);
   const items = React.useMemo(() => {
     const now = new Date();
@@ -50,10 +44,7 @@ function MonthBadge({
         onClick={() => setOpen((v) => !v)}
         className="inline-flex items-center gap-2 border border-[#8E8D8A]/30 bg-transparent px-3 h-9 rounded-full text-xs uppercase tracking-[0.22em] text-[#8E8D8A] hover:text-[#E98074] hover:border-[#E98074]/50 transition-colors"
       >
-        <span
-          aria-hidden
-          className="w-1 h-1 rounded-full bg-[#E98074]"
-        />
+        <span aria-hidden className="w-1 h-1 rounded-full bg-[#E98074]" />
         {month}
       </button>
       {open && (
@@ -67,9 +58,7 @@ function MonthBadge({
               }}
               className={classNames(
                 'w-full flex items-center justify-between px-4 py-2 text-sm text-left',
-                it.value === month
-                  ? 'text-[#E98074]'
-                  : 'text-[#8E8D8A] hover:text-[#E98074]',
+                it.value === month ? 'text-[#E98074]' : 'text-[#8E8D8A] hover:text-[#E98074]',
               )}
             >
               <span className="capitalize">{it.label}</span>
@@ -82,17 +71,10 @@ function MonthBadge({
   );
 }
 
-function CompanySwitcher({
-  companies,
-  activeSlug,
-}: {
-  companies: Company[];
-  activeSlug?: string;
-}) {
+function CompanySwitcher({ companies, activeSlug }: { companies: Company[]; activeSlug?: string }) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const active =
-    companies.find((c) => c.slug === activeSlug) ?? companies[0] ?? null;
+  const active = companies.find((c) => c.slug === activeSlug) ?? companies[0] ?? null;
 
   return (
     <div className="relative">
@@ -101,10 +83,7 @@ function CompanySwitcher({
         className="inline-flex items-center gap-3 border border-[#8E8D8A]/30 bg-transparent pl-3 pr-4 h-9 rounded-full text-sm text-[#8E8D8A] hover:text-[#E98074] hover:border-[#E98074]/50 transition-colors"
       >
         <span className="w-2 h-2 rounded-full bg-[#E98074]/70" />
-        <span
-          className="tracking-tight"
-          style={{ fontFamily: 'Fraunces, serif' }}
-        >
+        <span className="tracking-tight" style={{ fontFamily: 'Fraunces, serif' }}>
           {active?.name ?? 'Компания'}
         </span>
         <span aria-hidden className="text-[#8E8D8A]/50 text-xs">
@@ -114,9 +93,7 @@ function CompanySwitcher({
       {open && (
         <div className="absolute left-0 top-11 z-30 w-72 border border-[#8E8D8A]/20 bg-[#EAE7DC] shadow-xl rounded-xl py-2">
           {companies.length === 0 ? (
-            <div className="px-4 py-3 text-sm text-[#8E8D8A]/70">
-              Нет компаний
-            </div>
+            <div className="px-4 py-3 text-sm text-[#8E8D8A]/70">Нет компаний</div>
           ) : (
             companies.map((c) => (
               <button
@@ -127,15 +104,10 @@ function CompanySwitcher({
                 }}
                 className={classNames(
                   'w-full text-left px-4 py-2 text-sm flex items-center justify-between',
-                  c.slug === activeSlug
-                    ? 'text-[#E98074]'
-                    : 'text-[#8E8D8A] hover:text-[#E98074]',
+                  c.slug === activeSlug ? 'text-[#E98074]' : 'text-[#8E8D8A] hover:text-[#E98074]',
                 )}
               >
-                <span
-                  className="tracking-tight"
-                  style={{ fontFamily: 'Fraunces, serif' }}
-                >
+                <span className="tracking-tight" style={{ fontFamily: 'Fraunces, serif' }}>
                   {c.name}
                 </span>
                 <span className="text-[10px] uppercase tracking-[0.2em] text-[#8E8D8A]/50">
@@ -166,22 +138,13 @@ function UserMenu() {
       {open && (
         <div className="absolute right-0 top-11 z-30 w-60 border border-[#8E8D8A]/20 bg-[#EAE7DC] shadow-xl rounded-xl py-2 text-sm text-[#8E8D8A]">
           <div className="px-4 py-3 border-b border-[#8E8D8A]/15">
-            <div
-              className="text-base tracking-tight"
-              style={{ fontFamily: 'Fraunces, serif' }}
-            >
+            <div className="text-base tracking-tight" style={{ fontFamily: 'Fraunces, serif' }}>
               Владелец
             </div>
-            <div className="text-xs text-[#8E8D8A]/70 mt-0.5">
-              info@aoneagency.kz
-            </div>
+            <div className="text-xs text-[#8E8D8A]/70 mt-0.5">info@aoneagency.kz</div>
           </div>
-          <button className="w-full text-left px-4 py-2 hover:text-[#E98074]">
-            Профиль
-          </button>
-          <button className="w-full text-left px-4 py-2 hover:text-[#E85A4F]">
-            Выйти
-          </button>
+          <button className="w-full text-left px-4 py-2 hover:text-[#E98074]">Профиль</button>
+          <button className="w-full text-left px-4 py-2 hover:text-[#E85A4F]">Выйти</button>
         </div>
       )}
     </div>
@@ -202,11 +165,7 @@ const FREELANCE_NAV = [
   { href: '/freelance/stats', label: 'Статистика' },
 ];
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const params = useParams<{ slug?: string }>();
   const pathname = usePathname();
   const router = useRouter();
@@ -252,14 +211,11 @@ export default function DashboardLayout({
             Компания
           </div>
           {COMPANY_NAV.map((item) => {
-            const href = activeSlug
-              ? `/company/${activeSlug}${item.href}`
-              : '#';
+            const href = activeSlug ? `/company/${activeSlug}${item.href}` : '#';
             const isActive =
               !isFreelance &&
               (pathname === href ||
-                (item.href === '' &&
-                  pathname === `/company/${activeSlug}`) ||
+                (item.href === '' && pathname === `/company/${activeSlug}`) ||
                 (item.href !== '' && pathname?.startsWith(href)));
             return (
               <Link
@@ -274,9 +230,7 @@ export default function DashboardLayout({
                 )}
               >
                 <span>{item.label}</span>
-                {isActive && (
-                  <span className="w-1 h-1 rounded-full bg-[#E98074]" />
-                )}
+                {isActive && <span className="w-1 h-1 rounded-full bg-[#E98074]" />}
               </Link>
             );
           })}
@@ -301,9 +255,7 @@ export default function DashboardLayout({
                 )}
               >
                 <span>{item.label}</span>
-                {isActive && (
-                  <span className="w-1 h-1 rounded-full bg-[#E98074]" />
-                )}
+                {isActive && <span className="w-1 h-1 rounded-full bg-[#E98074]" />}
               </Link>
             );
           })}
@@ -317,10 +269,7 @@ export default function DashboardLayout({
         <header className="h-16 border-b border-[#8E8D8A]/15 px-8 flex items-center justify-between gap-6 sticky top-0 z-20 bg-[#EAE7DC]/90 backdrop-blur">
           <div className="flex items-center gap-4">
             {!isFreelance && (
-              <CompanySwitcher
-                companies={companies ?? []}
-                activeSlug={activeSlug}
-              />
+              <CompanySwitcher companies={companies ?? []} activeSlug={activeSlug} />
             )}
             {isFreelance && (
               <div
@@ -332,9 +281,7 @@ export default function DashboardLayout({
             )}
           </div>
           <div className="flex items-center gap-3">
-            {!isFreelance && (
-              <MonthBadge month={month} onChange={setMonth} />
-            )}
+            {!isFreelance && <MonthBadge month={month} onChange={setMonth} />}
             <UserMenu />
           </div>
         </header>

@@ -54,10 +54,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <label
-          htmlFor={fieldId}
-          className="text-[10px] uppercase tracking-[0.22em] text-stone"
-        >
+        <label htmlFor={fieldId} className="text-[10px] uppercase tracking-[0.22em] text-stone">
           {label}
         </label>
       )}
@@ -101,9 +98,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           )}
         />
         {suffix && (
-          <span className="text-xs uppercase tracking-[0.18em] text-stone/60 pb-2">
-            {suffix}
-          </span>
+          <span className="text-xs uppercase tracking-[0.18em] text-stone/60 pb-2">{suffix}</span>
         )}
         <button
           type="button"

@@ -22,7 +22,7 @@ interface CompanyForm {
   lng: number;
   geofenceRadius: number; // meters
   workStart: string; // "09:00"
-  workEnd: string;   // "18:00"
+  workEnd: string; // "18:00"
   timezone: string;
 }
 
@@ -58,10 +58,38 @@ const STEPS = ['Компания', 'Адрес', 'График', 'Проверк
 
 function slugify(name: string): string {
   const map: Record<string, string> = {
-    а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh',
-    з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o',
-    п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts',
-    ч: 'ch', ш: 'sh', щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu',
+    а: 'a',
+    б: 'b',
+    в: 'v',
+    г: 'g',
+    д: 'd',
+    е: 'e',
+    ё: 'yo',
+    ж: 'zh',
+    з: 'z',
+    и: 'i',
+    й: 'y',
+    к: 'k',
+    л: 'l',
+    м: 'm',
+    н: 'n',
+    о: 'o',
+    п: 'p',
+    р: 'r',
+    с: 's',
+    т: 't',
+    у: 'u',
+    ф: 'f',
+    х: 'h',
+    ц: 'ts',
+    ч: 'ch',
+    ш: 'sh',
+    щ: 'sch',
+    ъ: '',
+    ы: 'y',
+    ь: '',
+    э: 'e',
+    ю: 'yu',
     я: 'ya',
   };
   return name
@@ -117,16 +145,13 @@ function OnboardingCompanyView() {
     }
     if (s === 1) {
       if (form.address.trim().length < 3) next.address = 'Укажите адрес';
-      if (!Number.isFinite(form.lat) || form.lat < -90 || form.lat > 90)
-        next.lat = 'Широта −90…90';
+      if (!Number.isFinite(form.lat) || form.lat < -90 || form.lat > 90) next.lat = 'Широта −90…90';
       if (!Number.isFinite(form.lng) || form.lng < -180 || form.lng > 180)
         next.lng = 'Долгота −180…180';
     }
     if (s === 2) {
-      if (!/^\d{2}:\d{2}$/.test(form.workStart))
-        next.workStart = 'Формат чч:мм';
-      if (!/^\d{2}:\d{2}$/.test(form.workEnd))
-        next.workEnd = 'Формат чч:мм';
+      if (!/^\d{2}:\d{2}$/.test(form.workStart)) next.workStart = 'Формат чч:мм';
+      if (!/^\d{2}:\d{2}$/.test(form.workEnd)) next.workEnd = 'Формат чч:мм';
       if (
         /^\d{2}:\d{2}$/.test(form.workStart) &&
         /^\d{2}:\d{2}$/.test(form.workEnd) &&
@@ -161,8 +186,7 @@ function OnboardingCompanyView() {
       toast.success('Компания создана', { description: res.slug });
       router.push(`/dashboard/company/${res.slug}`);
     } catch (e) {
-      const msg =
-        e instanceof Error ? e.message : 'Не удалось создать компанию';
+      const msg = e instanceof Error ? e.message : 'Не удалось создать компанию';
       toast.error('Ошибка', { description: msg });
     } finally {
       setSubmitting(false);
@@ -192,10 +216,7 @@ function OnboardingCompanyView() {
       </div>
 
       <div className="mb-8">
-        <StepProgress
-          steps={STEPS as unknown as string[]}
-          current={step}
-        />
+        <StepProgress steps={STEPS as unknown as string[]} current={step} />
       </div>
 
       <Card className="!p-6 md:!p-8">
@@ -274,8 +295,7 @@ function OnboardingCompanyView() {
                   step={25}
                 />
                 <p className="text-xs text-stone/60">
-                  Сотрудники смогут отмечаться, находясь в пределах указанного
-                  радиуса от офиса.
+                  Сотрудники смогут отмечаться, находясь в пределах указанного радиуса от офиса.
                 </p>
               </div>
             )}
@@ -335,14 +355,8 @@ function OnboardingCompanyView() {
                       label="Координаты"
                       value={`${form.lat.toFixed(6)}, ${form.lng.toFixed(6)}`}
                     />
-                    <ReviewRow
-                      label="Геозона"
-                      value={`${form.geofenceRadius} м`}
-                    />
-                    <ReviewRow
-                      label="График"
-                      value={`${form.workStart} – ${form.workEnd}`}
-                    />
+                    <ReviewRow label="Геозона" value={`${form.geofenceRadius} м`} />
+                    <ReviewRow label="График" value={`${form.workStart} – ${form.workEnd}`} />
                     <ReviewRow label="Часовой пояс" value={form.timezone} />
                   </dl>
                 </div>
@@ -388,10 +402,7 @@ function OnboardingCompanyView() {
   );
 }
 
-const ReviewRow: React.FC<{ label: string; value: React.ReactNode }> = ({
-  label,
-  value,
-}) => (
+const ReviewRow: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
   <div className="flex items-baseline justify-between gap-4 py-2.5">
     <dt className="text-[10px] uppercase tracking-[0.22em] text-stone/60 whitespace-nowrap">
       {label}

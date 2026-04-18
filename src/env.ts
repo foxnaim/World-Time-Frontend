@@ -5,21 +5,9 @@ import { z } from 'zod';
  * Parsed once at import time; throws in dev if misconfigured.
  */
 const publicSchema = z.object({
-  NEXT_PUBLIC_API_URL: z
-    .string()
-    .url()
-    .optional()
-    .default('http://localhost:4000'),
-  NEXT_PUBLIC_BOT_USERNAME: z
-    .string()
-    .min(1)
-    .optional()
-    .default('worktact_bot'),
-  NEXT_PUBLIC_APP_URL: z
-    .string()
-    .url()
-    .optional()
-    .default('http://localhost:3000'),
+  NEXT_PUBLIC_API_URL: z.string().url().optional().default('http://localhost:4000'),
+  NEXT_PUBLIC_BOT_USERNAME: z.string().min(1).optional().default('worktact_bot'),
+  NEXT_PUBLIC_APP_URL: z.string().url().optional().default('http://localhost:3000'),
   // Optional default locale — read by the i18n helpers when no cookie or
   // Accept-Language match is present. Kept as a loose string so the i18n
   // module can validate it against the actual `LOCALES` tuple; that way
@@ -36,10 +24,7 @@ const parsed = publicSchema.safeParse({
 
 if (!parsed.success) {
   // eslint-disable-next-line no-console
-  console.error(
-    '[Tact] Invalid public env vars:',
-    parsed.error.flatten().fieldErrors,
-  );
+  console.error('[Tact] Invalid public env vars:', parsed.error.flatten().fieldErrors);
   throw new Error('Invalid public environment variables');
 }
 

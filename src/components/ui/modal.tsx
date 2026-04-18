@@ -66,9 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
   React.useEffect(() => {
     if (!open) return;
     previousFocusRef.current =
-      typeof document !== 'undefined'
-        ? (document.activeElement as HTMLElement | null)
-        : null;
+      typeof document !== 'undefined' ? (document.activeElement as HTMLElement | null) : null;
 
     // Defer focus until after motion mounts the card.
     const id = window.setTimeout(() => {
@@ -108,12 +106,8 @@ export const Modal: React.FC<ModalProps> = ({
       if (e.key !== 'Tab') return;
       const card = cardRef.current;
       if (!card) return;
-      const focusables = Array.from(
-        card.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-      ).filter(
-        (el) =>
-          !el.hasAttribute('disabled') &&
-          el.getAttribute('aria-hidden') !== 'true',
+      const focusables = Array.from(card.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        (el) => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true',
       );
       if (focusables.length === 0) {
         e.preventDefault();
@@ -150,11 +144,7 @@ export const Modal: React.FC<ModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label={
-            !hasTitle
-              ? (ariaLabel ?? undefined)
-              : typeof title !== 'string'
-                ? ariaLabel
-                : undefined
+            !hasTitle ? (ariaLabel ?? undefined) : typeof title !== 'string' ? ariaLabel : undefined
           }
           aria-labelledby={hasTitle ? titleId : undefined}
           aria-describedby={hasDesc ? descId : undefined}

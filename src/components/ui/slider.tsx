@@ -94,10 +94,7 @@ export const Slider: React.FC<SliderProps> = ({
       {(label || suffix) && (
         <div className="flex items-baseline justify-between">
           {label && (
-            <label
-              htmlFor={fieldId}
-              className="text-[10px] uppercase tracking-[0.22em] text-stone"
-            >
+            <label htmlFor={fieldId} className="text-[10px] uppercase tracking-[0.22em] text-stone">
               {label}
             </label>
           )}

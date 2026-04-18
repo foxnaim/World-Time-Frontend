@@ -169,9 +169,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
               onClick={() => setRateMode('hourly')}
               className={cn(
                 'rounded-full px-4 py-1.5 text-sm transition-colors',
-                rateMode === 'hourly'
-                  ? 'bg-coral text-cream'
-                  : 'text-stone hover:text-coral',
+                rateMode === 'hourly' ? 'bg-coral text-cream' : 'text-stone hover:text-coral',
               )}
             >
               Почасовой
@@ -183,9 +181,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
               onClick={() => setRateMode('fixed')}
               className={cn(
                 'rounded-full px-4 py-1.5 text-sm transition-colors',
-                rateMode === 'fixed'
-                  ? 'bg-coral text-cream'
-                  : 'text-stone hover:text-coral',
+                rateMode === 'fixed' ? 'bg-coral text-cream' : 'text-stone hover:text-coral',
               )}
             >
               Фиксированный

@@ -27,9 +27,7 @@ function NoAccess() {
   return (
     <div className="min-h-screen bg-stone-200 text-stone-700 flex items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <div className="text-[10px] uppercase tracking-[0.3em] text-stone-500">
-          403
-        </div>
+        <div className="text-[10px] uppercase tracking-[0.3em] text-stone-500">403</div>
         <h1
           className="mt-4 text-4xl md:text-5xl text-stone-800 tracking-tight"
           style={{ fontFamily: 'Fraunces, serif', fontWeight: 400 }}
@@ -37,8 +35,8 @@ function NoAccess() {
           Нет доступа
         </h1>
         <p className="mt-4 text-sm text-stone-600">
-          Этот раздел доступен только операторам платформы. Если вы ожидаете
-          увидеть его — проверьте, добавлен ли ваш Telegram ID в
+          Этот раздел доступен только операторам платформы. Если вы ожидаете увидеть его —
+          проверьте, добавлен ли ваш Telegram ID в
           <code className="mx-1 px-1.5 py-0.5 bg-stone-100 rounded border border-stone-300 text-xs">
             SUPER_ADMIN_TELEGRAM_IDS
           </code>
@@ -70,15 +68,12 @@ function Sidebar() {
         >
           Work Tact
         </Link>
-        <span className="ml-3 text-[10px] uppercase tracking-[0.28em] text-stone-500">
-          admin
-        </span>
+        <span className="ml-3 text-[10px] uppercase tracking-[0.28em] text-stone-500">admin</span>
       </div>
       <nav className="p-4 flex flex-col gap-1">
         {NAV.map((item) => {
           const isActive =
-            pathname === item.href ||
-            (item.href !== '/admin' && pathname?.startsWith(item.href));
+            pathname === item.href || (item.href !== '/admin' && pathname?.startsWith(item.href));
           return (
             <Link
               key={item.href}
@@ -100,19 +95,14 @@ function Sidebar() {
   );
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   // Probe the admin API — a 403 means "not a super-admin". We use this as the
   // single source of truth for whether to render the admin chrome or the
   // no-access screen.
-  const { data, error, isLoading } = useSWR<AdminStats>(
-    '/admin/stats',
-    fetcher,
-    { revalidateOnFocus: false, shouldRetryOnError: false },
-  );
+  const { data, error, isLoading } = useSWR<AdminStats>('/admin/stats', fetcher, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+  });
 
   if (isLoading && !error) {
     return (
@@ -143,9 +133,7 @@ export default function AdminLayout({
           >
             Платформа
           </div>
-          <div className="text-[10px] uppercase tracking-[0.28em] text-stone-500">
-            super-admin
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.28em] text-stone-500">super-admin</div>
         </header>
         <main className="flex-1 px-8 py-10 md:px-12 md:py-12 max-w-[1400px] w-full">
           {children}

@@ -7,8 +7,7 @@ export const metadata: Metadata = {
     'Work Tact by AOne Agency — учёт рабочего времени для бизнеса и фрилансеров. QR, геозоны, анти-фрод, отчёты в Google Sheets.',
   openGraph: {
     title: 'Work Tact — Экосистема учёта времени',
-    description:
-      'QR-сканер, геозоны, отчёты. Для команд и фрилансеров.',
+    description: 'QR-сканер, геозоны, отчёты. Для команд и фрилансеров.',
     type: 'website',
     siteName: 'Work Tact',
   },
