@@ -3,6 +3,7 @@
 import { SWRConfig } from 'swr';
 import { fetcher } from '@/lib/fetcher';
 import { LenisProvider } from '@/lib/lenis';
+import { ToastProvider } from '@/components/ui/toast';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -28,7 +29,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         dedupingInterval: 2000,
       }}
     >
-      <LenisProvider>{children}</LenisProvider>
+      <LenisProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </LenisProvider>
     </SWRConfig>
   );
 }

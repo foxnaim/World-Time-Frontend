@@ -73,3 +73,24 @@ export function clearAuthCookies(): void {
   deleteCookie(ACCESS_COOKIE);
   deleteCookie(REFRESH_COOKIE);
 }
+
+export interface AuthTokenPair {
+  accessToken: string;
+  refreshToken: string;
+  /** Access token lifetime in seconds (optional, defaults to 1h). */
+  expiresIn?: number;
+}
+
+/**
+ * Write both access + refresh tokens from an /auth response payload.
+ * Mirrors the backend contract defined in `@worktime/types`.
+ */
+export function setAuthCookies(pair: AuthTokenPair): void {
+  writeAccessToken(pair.accessToken, pair.expiresIn ?? 60 * 60);
+  writeRefreshToken(pair.refreshToken);
+}
+
+/** Back-compat alias used by AuthGuard and legacy callers. */
+export function readAuthCookie(): string | null {
+  return readAccessToken();
+}
