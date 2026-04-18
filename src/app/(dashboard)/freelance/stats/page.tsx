@@ -13,12 +13,14 @@ interface Project {
   status: string;
 }
 
-interface MonthlySummary {
-  projectId: string;
+interface RateHistoryPoint {
+  month: string;
+  periodStart: string;
+  periodEnd: string;
   totalSeconds: number;
-  realHourlyRate?: number | null;
-  declaredRate?: number | null;
-  insight: string;
+  totalIncome: number;
+  effectiveRate: number;
+  currency: string;
 }
 
 interface RealRate {
@@ -82,24 +84,6 @@ function MonthRateFetcher({
   return null;
 }
 
-function ProjectMonthFetcher({
-  projectId,
-  monthKey,
-  onData,
-}: {
-  projectId: string;
-  monthKey: string;
-  onData: (projectId: string, key: string, data: MonthlySummary | undefined) => void;
-}) {
-  const { data } = useSWR<MonthlySummary>(
-    `/api/projects/${projectId}/monthly-summary?month=${monthKey}`,
-    fetcher,
-  );
-  React.useEffect(() => {
-    onData(projectId, monthKey, data);
-  }, [projectId, monthKey, data, onData]);
-  return null;
-}
 
 export default function StatsPage() {
   const months = React.useMemo<MonthSlot[]>(() => lastSixMonths(), []);
@@ -186,32 +170,41 @@ export default function StatsPage() {
   );
 }
 
+/**
+ * Per-project 6-month rate history. One SWR call per project (the backend
+ * does the bucketing) instead of six per-month fetches — cuts request volume
+ * from 6N → N and keeps us well under the per-user rate limiter.
+ */
 function ProjectRateHistory({ project, months }: { project: Project; months: MonthSlot[] }) {
-  const [byMonth, setByMonth] = React.useState<Record<string, MonthlySummary | undefined>>({});
-  const onData = React.useCallback(
-    (projectId: string, key: string, data: MonthlySummary | undefined) => {
-      if (projectId !== project.id) return;
-      setByMonth((prev) => (prev[key] === data ? prev : { ...prev, [key]: data }));
-    },
-    [project.id],
+  const { data, error } = useSWR<RateHistoryPoint[]>(
+    `/api/analytics/user/project/${project.id}/rate-history?months=${months.length}`,
+    fetcher,
   );
 
+  const byMonth = React.useMemo(() => {
+    const m = new Map<string, RateHistoryPoint>();
+    if (Array.isArray(data)) {
+      for (const p of data) m.set(p.month, p);
+    }
+    return m;
+  }, [data]);
+
   const series = months.map((m) => {
-    const s = byMonth[m.key];
+    const s = byMonth.get(m.key);
+    // A point with seconds > 0 but effectiveRate = 0 happens for
+    // un-priced projects (no hourlyRate, not yet DONE) — show "—" so the
+    // user sees "untracked income" rather than a misleading 0 ₽/ч.
+    const hasRate = s != null && s.totalSeconds > 0 && s.effectiveRate > 0;
     return {
       label: m.label,
-      value: s?.realHourlyRate ?? 0,
-      display:
-        s?.realHourlyRate != null ? Math.round(s.realHourlyRate).toLocaleString('ru-RU') : '—',
+      value: hasRate ? s!.effectiveRate : 0,
+      display: hasRate ? Math.round(s!.effectiveRate).toLocaleString('ru-RU') : '—',
     };
   });
   const max = Math.max(1, project.hourlyRate || 0, ...series.map((s) => s.value));
 
   return (
     <Card>
-      {months.map((m) => (
-        <ProjectMonthFetcher key={m.key} projectId={project.id} monthKey={m.key} onData={onData} />
-      ))}
       <div className="flex items-baseline justify-between">
         <h4 className="text-lg font-medium text-stone" style={{ fontFamily: 'Fraunces, serif' }}>
           {project.name}
@@ -223,12 +216,16 @@ function ProjectRateHistory({ project, months }: { project: Project; months: Mon
         )}
       </div>
       <div className="mt-4">
-        <BarChart
-          data={series}
-          max={max}
-          color="#E98074"
-          refLine={project.hourlyRate || undefined}
-        />
+        {error ? (
+          <p className="py-6 text-center text-xs text-stone/60">Не удалось загрузить историю.</p>
+        ) : (
+          <BarChart
+            data={series}
+            max={max}
+            color="#E98074"
+            refLine={project.hourlyRate || undefined}
+          />
+        )}
       </div>
     </Card>
   );
