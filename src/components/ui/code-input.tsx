@@ -15,6 +15,11 @@ export interface CodeInputProps {
   errorMessage?: string;
   className?: string;
   'aria-label'?: string;
+  /**
+   * Prefix for each input's `id` attribute so external <label htmlFor>
+   * references match. Boxes get id={`${idPrefix}-${index}`}. Defaults to "otp".
+   */
+  idPrefix?: string;
 }
 
 export const CodeInput: React.FC<CodeInputProps> = ({
@@ -28,6 +33,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
   errorMessage,
   className,
   'aria-label': ariaLabel = 'Код подтверждения',
+  idPrefix = 'otp',
 }) => {
   const errorId = React.useId();
   const [internal, setInternal] = React.useState<string[]>(() =>
@@ -132,6 +138,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
         {internal.map((char, idx) => (
           <input
             key={idx}
+            id={`${idPrefix}-${idx}`}
             ref={(el) => {
               refs.current[idx] = el;
             }}
