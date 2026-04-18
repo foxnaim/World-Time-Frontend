@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/fetcher';
+import { clearAuthCookies } from '@/lib/auth-cookie';
 
 type Company = {
   id: string;
