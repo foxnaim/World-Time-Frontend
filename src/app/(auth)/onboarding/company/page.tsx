@@ -140,8 +140,8 @@ function OnboardingCompanyView() {
     const next: typeof errors = {};
     if (s === 0) {
       if (form.name.trim().length < 2) next.name = 'Укажите название';
-      if (!/^[a-z0-9-]{2,40}$/.test(form.slug))
-        next.slug = 'Только латиница, цифры, дефис (2–40 симв.)';
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(form.slug) || form.slug.length < 2 || form.slug.length > 40)
+        next.slug = 'Только латиница, цифры, дефис (kebab-case, 2–40 симв.)';
     }
     if (s === 1) {
       if (form.address.trim().length < 3) next.address = 'Укажите адрес';
@@ -178,13 +178,15 @@ function OnboardingCompanyView() {
         name: form.name.trim(),
         slug: form.slug,
         address: form.address.trim(),
-        location: { lat: form.lat, lng: form.lng },
-        geofenceRadius: form.geofenceRadius,
-        workHours: { start: form.workStart, end: form.workEnd },
+        latitude: form.lat,
+        longitude: form.lng,
+        geofenceRadiusM: form.geofenceRadius,
+        workStartHour: Number.parseInt(form.workStart.slice(0, 2), 10),
+        workEndHour: Number.parseInt(form.workEnd.slice(0, 2), 10),
         timezone: form.timezone,
       });
       toast.success('Компания создана', { description: res.slug });
-      router.push(`/dashboard/company/${res.slug}`);
+      router.push(`/company/${res.slug}`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Не удалось создать компанию';
       toast.error('Ошибка', { description: msg });

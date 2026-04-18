@@ -8,6 +8,19 @@ import { fetcher } from '@/lib/fetcher';
 import { KpiCard } from '@/components/dashboard/company/kpi-card';
 import { RankingList, type RankingEntry } from '@/components/dashboard/company/ranking-list';
 
+// ---------------------------------------------------------------------------
+// Backend response shapes
+//
+// Kept in sync with `AnalyticsController` + `CompanyController`:
+//   GET /companies/:slug                        -> CompanyDetail
+//   GET /analytics/company/:id/summary?month=   -> CompanySummary (aggregate)
+//   GET /analytics/company/:id/ranking?month=   -> CompanyRanking[]
+//   GET /analytics/company/:id/late-stats?month -> CompanyLateStats[]
+//
+// The page adapts these raw shapes into the view-model the UI components
+// expect (KpiCard, RankingList, recent-lates feed).
+// ---------------------------------------------------------------------------
+
 type CompanyDetail = {
   id: string;
   slug: string;
@@ -15,45 +28,55 @@ type CompanyDetail = {
   address?: string;
 };
 
-type SummaryResp = {
-  employees: number;
+type CompanySummary = {
+  totalEmployees: number;
   avgLateMinutes: number;
-  overtimeHours: number;
+  totalLateCount: number;
+  totalOvertimeHours: number;
   punctualityScore: number;
-  prev?: {
-    employees?: number;
-    avgLateMinutes?: number;
-    overtimeHours?: number;
-    punctualityScore?: number;
-  };
 };
 
-type LateStatsResp = {
-  recent: Array<{
-    id: string;
-    employeeName: string;
-    at: string; // ISO
-    lateMinutes: number;
-  }>;
+type CompanyRankingRow = {
+  rank: number;
+  employeeId: string;
+  name: string;
+  punctualityScore: number;
 };
 
-type RankingResp = { items: RankingEntry[] };
+type CompanyLateStatsRow = {
+  employeeId: string;
+  name: string;
+  lateCount: number;
+  avgLateMinutes: number;
+  totalLateMinutes: number;
+};
 
 function currentYearMonth(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function delta(curr?: number, prev?: number) {
+/**
+ * Shift a YYYY-MM key by N months (negative = into the past). Used to
+ * fetch the previous month so KPI cards can show month-over-month deltas.
+ */
+function shiftMonth(ym: string, delta: number): string {
+  const [y, m] = ym.split('-').map((x) => Number(x));
+  if (!y || !m) return ym;
+  const d = new Date(Date.UTC(y, m - 1 + delta, 1));
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+function diff(curr?: number, prev?: number) {
   if (curr == null || prev == null) return null;
   return Number((curr - prev).toFixed(1));
 }
 
-function ErrorState({ onRetry }: { onRetry: () => void }) {
+function ErrorState({ onRetry, label }: { onRetry: () => void; label?: string }) {
   return (
     <div className="py-8 text-center">
       <p className="text-sm text-[#E85A4F] tracking-tight">
-        Не удалось загрузить. Попробуйте обновить.
+        {label ?? 'Не удалось загрузить. Попробуйте обновить.'}
       </p>
       <Button variant="ghost" size="sm" className="mt-3" onClick={onRetry}>
         Повторить
@@ -66,25 +89,14 @@ function Skeleton({ className }: { className?: string }) {
   return <div className={cn('animate-pulse rounded-md bg-[#D8C3A5]/40', className)} />;
 }
 
-function formatTime(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleTimeString('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-function formatDateShort(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' });
-}
-
 export default function CompanyOverviewPage() {
   const params = useParams<{ slug: string }>();
   const sp = useSearchParams();
   const month = sp?.get('month') ?? currentYearMonth();
+  const prevMonth = shiftMonth(month, -1);
   const slug = params?.slug;
 
+  // 1) Resolve slug -> company (id is needed for every analytics endpoint).
   const {
     data: company,
     error: companyErr,
@@ -93,32 +105,62 @@ export default function CompanyOverviewPage() {
 
   const id = company?.id;
 
+  // 2) Current-month aggregate summary.
   const {
     data: summary,
     error: summaryErr,
     mutate: refreshSummary,
-  } = useSWR<SummaryResp>(
+  } = useSWR<CompanySummary>(
     id ? `/api/analytics/company/${id}/summary?month=${month}` : null,
     fetcher,
   );
 
+  // 2b) Previous-month summary (delta source). Fetched in parallel; if it
+  // fails we just render cards without arrows — never block the page.
+  const { data: summaryPrev } = useSWR<CompanySummary>(
+    id ? `/api/analytics/company/${id}/summary?month=${prevMonth}` : null,
+    fetcher,
+    { shouldRetryOnError: false },
+  );
+
+  // 3) Ranking — backend returns a raw array.
   const {
     data: ranking,
     error: rankingErr,
     mutate: refreshRanking,
-  } = useSWR<RankingResp>(
-    id ? `/api/analytics/company/${id}/ranking?month=${month}` : null,
+  } = useSWR<CompanyRankingRow[]>(
+    id ? `/api/analytics/company/${id}/ranking?month=${month}&limit=5` : null,
     fetcher,
   );
 
+  // 4) Late stats — backend returns per-employee aggregates (not a
+  // chronological feed of check-ins). We present it as "most-late employees
+  // this month" which is still a useful, real-data feed.
   const {
     data: late,
     error: lateErr,
     mutate: refreshLate,
-  } = useSWR<LateStatsResp>(
+  } = useSWR<CompanyLateStatsRow[]>(
     id ? `/api/analytics/company/${id}/late-stats?month=${month}` : null,
     fetcher,
   );
+
+  // ------- Derived view models -------
+  const rankingItems: RankingEntry[] = React.useMemo(() => {
+    if (!ranking) return [];
+    return ranking.map((r) => ({
+      employeeId: r.employeeId,
+      name: r.name,
+      score: r.punctualityScore,
+    }));
+  }, [ranking]);
+
+  const lateFeed = React.useMemo(() => {
+    if (!late) return [];
+    return [...late]
+      .filter((r) => r.lateCount > 0)
+      .sort((a, b) => b.totalLateMinutes - a.totalLateMinutes);
+  }, [late]);
 
   const headerTitle = company?.name ?? '—';
 
@@ -132,7 +174,10 @@ export default function CompanyOverviewPage() {
           </div>
           {companyErr ? (
             <div className="mt-3">
-              <ErrorState onRetry={() => refreshCompany()} />
+              <ErrorState
+                onRetry={() => refreshCompany()}
+                label="Компания не найдена или нет доступа."
+              />
             </div>
           ) : !company ? (
             <Skeleton className="mt-4 h-12 w-72" />
@@ -157,8 +202,8 @@ export default function CompanyOverviewPage() {
       >
         <KpiCard
           eyebrow="Сотрудников"
-          value={summary?.employees ?? 0}
-          delta={delta(summary?.employees, summary?.prev?.employees)}
+          value={summary?.totalEmployees ?? 0}
+          delta={diff(summary?.totalEmployees, summaryPrev?.totalEmployees)}
           loading={!summary && !summaryErr}
           caption="в штате"
         />
@@ -166,16 +211,16 @@ export default function CompanyOverviewPage() {
           eyebrow="Среднее опоздание"
           value={(summary?.avgLateMinutes ?? 0).toFixed(0)}
           suffix="мин"
-          delta={delta(summary?.avgLateMinutes, summary?.prev?.avgLateMinutes)}
+          delta={diff(summary?.avgLateMinutes, summaryPrev?.avgLateMinutes)}
           invertSemantic
           loading={!summary && !summaryErr}
           caption="за месяц"
         />
         <KpiCard
           eyebrow="Переработки"
-          value={(summary?.overtimeHours ?? 0).toFixed(1)}
+          value={(summary?.totalOvertimeHours ?? 0).toFixed(1)}
           suffix="ч"
-          delta={delta(summary?.overtimeHours, summary?.prev?.overtimeHours)}
+          delta={diff(summary?.totalOvertimeHours, summaryPrev?.totalOvertimeHours)}
           loading={!summary && !summaryErr}
           caption="за месяц"
         />
@@ -183,13 +228,18 @@ export default function CompanyOverviewPage() {
           eyebrow="Punctuality"
           value={(summary?.punctualityScore ?? 0).toFixed(0)}
           suffix="score"
-          delta={delta(summary?.punctualityScore, summary?.prev?.punctualityScore)}
+          delta={diff(summary?.punctualityScore, summaryPrev?.punctualityScore)}
           loading={!summary && !summaryErr}
           caption="0 – 100"
         />
       </section>
 
-      {summaryErr && <ErrorState onRetry={() => refreshSummary()} />}
+      {summaryErr && (
+        <ErrorState
+          onRetry={() => refreshSummary()}
+          label="Не удалось загрузить сводку за месяц."
+        />
+      )}
 
       {/* Two column */}
       <section className="grid gap-6 lg:grid-cols-2">
@@ -207,11 +257,11 @@ export default function CompanyOverviewPage() {
               ))}
             </div>
           ) : (
-            <RankingList items={ranking.items ?? []} max={5} />
+            <RankingList items={rankingItems} max={5} />
           )}
         </Card>
 
-        <Card eyebrow="Последние опоздания" title="Лента">
+        <Card eyebrow="Опоздания за месяц" title="Лента">
           {lateErr ? (
             <ErrorState onRetry={() => refreshLate()} />
           ) : !late ? (
@@ -220,7 +270,7 @@ export default function CompanyOverviewPage() {
                 <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
-          ) : (late.recent?.length ?? 0) === 0 ? (
+          ) : lateFeed.length === 0 ? (
             <div className="py-10 text-center">
               <div className="text-3xl text-[#8E8D8A]/70" style={{ fontFamily: 'Fraunces, serif' }}>
                 Пусто
@@ -231,12 +281,12 @@ export default function CompanyOverviewPage() {
             </div>
           ) : (
             <ul className="flex flex-col">
-              {late.recent.map((r, i) => (
+              {lateFeed.map((r, i) => (
                 <li
-                  key={r.id}
+                  key={r.employeeId}
                   className={cn(
                     'grid grid-cols-[auto_1fr_auto] items-center gap-5 py-3.5',
-                    i !== late.recent.length - 1 && 'border-b border-[#8E8D8A]/15',
+                    i !== lateFeed.length - 1 && 'border-b border-[#8E8D8A]/15',
                   )}
                 >
                   <div className="flex flex-col items-start">
@@ -244,25 +294,25 @@ export default function CompanyOverviewPage() {
                       className="text-lg text-[#8E8D8A] tabular-nums"
                       style={{ fontFamily: 'Fraunces, serif' }}
                     >
-                      {formatTime(r.at)}
+                      {r.lateCount}×
                     </span>
                     <span className="text-[10px] uppercase tracking-[0.22em] text-[#8E8D8A]/50">
-                      {formatDateShort(r.at)}
+                      опозданий
                     </span>
                   </div>
                   <div
                     className="text-base text-[#8E8D8A] truncate"
                     style={{ fontFamily: 'Fraunces, serif' }}
                   >
-                    {r.employeeName}
+                    {r.name}
                   </div>
                   <div
                     className="text-xl tabular-nums text-[#E85A4F]"
                     style={{ fontFamily: 'Fraunces, serif' }}
                   >
-                    +{r.lateMinutes}
+                    +{Math.round(r.avgLateMinutes)}
                     <span className="ml-1 text-[10px] uppercase tracking-[0.22em] text-[#E85A4F]/70">
-                      мин
+                      мин/раз
                     </span>
                   </div>
                 </li>
