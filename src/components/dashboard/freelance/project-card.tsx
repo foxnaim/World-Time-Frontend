@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { Badge, Button, Card, cn } from '@worktime/ui';
+import { Badge, Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { api } from '@/lib/api';
 import type { ActiveEntry } from './timer';

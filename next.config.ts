@@ -59,7 +59,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
-  transpilePackages: ['@worktime/ui', '@worktime/types'],
+  transpilePackages: ['@tact/ui', '@tact/types'],
   ...(useRedisCache
     ? {
         cacheHandler: require.resolve('./cache-handler.mjs'),

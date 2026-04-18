@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Button, Card } from '@worktime/ui';
+import { Button, Card } from '@tact/ui';
 import { AuthGuard } from '@/components/shared/auth-guard';
 import { FormField } from '@/components/ui/form-field';
 import { NumberInput } from '@/components/ui/number-input';

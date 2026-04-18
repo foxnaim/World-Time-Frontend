@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'WorkTime — учёт времени через Telegram + QR';
+export const alt = 'Tact — ритм рабочего дня';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -85,20 +85,20 @@ export default async function TwitterImage() {
             display: 'flex',
           }}
         >
-          WorkTime
+          Tact
         </div>
 
         <div
           style={{
-            fontSize: 220,
+            fontSize: 260,
             fontWeight: 600,
             color: STONE,
             lineHeight: 0.95,
-            letterSpacing: -6,
+            letterSpacing: -8,
             display: 'flex',
           }}
         >
-          WORKTIME
+          Tact
         </div>
 
         <div
@@ -111,7 +111,7 @@ export default async function TwitterImage() {
             display: 'flex',
           }}
         >
-          Учёт времени через Telegram + QR
+          Ритм рабочего дня · Telegram + QR
         </div>
 
         <div

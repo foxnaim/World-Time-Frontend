@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@worktime/ui';
+import { cn } from '@tact/ui';
 
 export interface CodeInputProps {
   length?: number;

@@ -1,4 +1,4 @@
-/* WorkTime — minimal service worker
+/* Tact — minimal service worker
  *
  * Scope:
  *   - cache-first for static assets (css / js / svg / woff2 / png / ico)
@@ -9,8 +9,9 @@
  * dependency-free worker registered by <RegisterSw /> on the office QR page.
  */
 
-const VERSION = 'worktime-sw-v1';
+const VERSION = 'tact-sw-v1';
 const STATIC_CACHE = `${VERSION}-static`;
+const EXPECTED_CACHE_PREFIX = 'tact-sw-';
 
 const STATIC_EXTENSIONS = /\.(?:css|js|mjs|svg|png|jpg|jpeg|webp|ico|woff2?)$/i;
 
@@ -24,9 +25,16 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
+      // Drop any previous-generation caches — both the prior `worktime-sw-*`
+      // generation (pre-rebrand) and any older `tact-sw-*` versions that are
+      // not the currently active VERSION.
       await Promise.all(
         keys
-          .filter((k) => k.startsWith('worktime-sw-') && !k.startsWith(VERSION))
+          .filter(
+            (k) =>
+              (k.startsWith(EXPECTED_CACHE_PREFIX) || k.startsWith('worktime-sw-')) &&
+              !k.startsWith(VERSION),
+          )
           .map((k) => caches.delete(k)),
       );
       await self.clients.claim();

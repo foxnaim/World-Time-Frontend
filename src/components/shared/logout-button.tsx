@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, type ButtonProps } from '@worktime/ui';
+import { Button, type ButtonProps } from '@tact/ui';
 import { clearAuthCookies } from '@/lib/auth-cookie';
 
 export interface LogoutButtonProps extends Omit<ButtonProps, 'onClick' | 'children'> {

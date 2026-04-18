@@ -17,10 +17,10 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@worktime/ui": ["../packages/ui/src"],
-      "@worktime/ui/*": ["../packages/ui/src/*"],
-      "@worktime/types": ["../packages/types/src"],
-      "@worktime/types/*": ["../packages/types/src/*"]
+      "@tact/ui": ["../packages/ui/src"],
+      "@tact/ui/*": ["../packages/ui/src/*"],
+      "@tact/types": ["../packages/types/src"],
+      "@tact/types/*": ["../packages/types/src/*"]
     },
     "plugins": [{ "name": "next" }]
   },

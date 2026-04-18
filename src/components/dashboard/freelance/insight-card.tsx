@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, Dial, cn } from '@worktime/ui';
+import { Card, Dial, cn } from '@tact/ui';
 import { RateScale } from './rate-scale';
 
 export interface InsightCardProps {

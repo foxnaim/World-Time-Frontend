@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Dial } from '@worktime/ui';
+import { Button, Dial } from '@tact/ui';
 import { Reveal } from './reveal';
 
 export function Cta() {

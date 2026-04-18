@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
-import { Badge, Button, Card, cn } from '@worktime/ui';
+import { Badge, Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { ProjectForm } from '@/components/dashboard/freelance/project-form';
 import { InsightCard } from '@/components/dashboard/freelance/insight-card';

@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'WorkTime — учёт времени через Telegram и QR';
+export const alt = 'Tact — ритм рабочего дня';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -103,23 +103,44 @@ export default async function OpengraphImage() {
             display: 'flex',
           }}
         >
-          WorkTime
+          Tact
         </div>
 
         {/* Centered title */}
         <div
           style={{
-            fontSize: 82,
-            fontWeight: 600,
-            color: STONE,
-            lineHeight: 1.05,
-            letterSpacing: -2,
-            textAlign: 'center',
-            maxWidth: 980,
             display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 28,
+            maxWidth: 980,
           }}
         >
-          WorkTime — учёт времени через Telegram и QR
+          <div
+            style={{
+              fontSize: 220,
+              fontWeight: 600,
+              color: STONE,
+              lineHeight: 0.95,
+              letterSpacing: -6,
+              textAlign: 'center',
+              display: 'flex',
+            }}
+          >
+            Tact
+          </div>
+          <div
+            style={{
+              fontSize: 42,
+              color: STONE,
+              opacity: 0.78,
+              textAlign: 'center',
+              lineHeight: 1.25,
+              display: 'flex',
+            }}
+          >
+            Ритм рабочего дня · Telegram + QR
+          </div>
         </div>
 
         {/* Stone tick ruler — bottom */}

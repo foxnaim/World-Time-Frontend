@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { COLORS } from '@worktime/ui';
+import { COLORS } from '@tact/ui';
 
 interface LinkGroup {
   title: string;
@@ -57,7 +57,7 @@ export function Footer() {
               className="text-3xl tracking-tight text-stone"
               style={{ fontFamily: 'Fraunces, serif' }}
             >
-              WorkTime
+              Tact
             </span>
             <p className="text-[10px] uppercase tracking-[0.28em] text-stone/70">
               © 2026 AOne Agency

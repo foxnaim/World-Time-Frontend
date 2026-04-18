@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollTick } from '@worktime/ui';
+import { ScrollTick } from '@tact/ui';
 import { Reveal } from './reveal';
 
 interface Step {

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Dial } from '@worktime/ui';
+import { Dial } from '@tact/ui';
 
 /**
  * Simple 5x5 QR-like mark, rendered as coral squares on cream.
@@ -109,7 +109,7 @@ export function Hero() {
           variants={item}
           className="mb-4 text-[10px] uppercase tracking-[0.4em] text-stone"
         >
-          2026 — AONE AGENCY
+          NO. 01 · 2026 · TACT
         </motion.span>
 
         {/* dial + overlaid heading */}
@@ -132,10 +132,10 @@ export function Hero() {
             style={{ fontFamily: 'Fraunces, serif' }}
           >
             <span className="text-[10px] uppercase tracking-[0.4em] text-stone/80">
-              WORK
+              Time, in rhythm
             </span>
-            <span className="text-6xl sm:text-7xl md:text-8xl font-medium leading-[0.9] tracking-tight text-stone">
-              TIME
+            <span className="text-7xl sm:text-8xl md:text-9xl font-medium leading-[0.9] tracking-tight text-stone">
+              TACT
             </span>
             <span className="mt-2 text-[10px] uppercase tracking-[0.4em] text-coral">
               2026
@@ -148,7 +148,7 @@ export function Hero() {
           variants={item}
           className="mt-10 max-w-xl text-center text-[11px] uppercase tracking-[0.32em] text-stone"
         >
-          Экосистема учёта времени
+          Ритм рабочего дня
           <span className="mx-2 text-stone/40">·</span>
           by AOne Agency
         </motion.p>

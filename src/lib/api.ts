@@ -1,5 +1,5 @@
 /**
- * Typed fetch wrapper for the WorkTime API.
+ * Typed fetch wrapper for the Tact API.
  *
  * - Base URL from NEXT_PUBLIC_API_URL (fallback: '/api').
  * - Auto-attaches Bearer token from `wt_access` cookie (client-side).

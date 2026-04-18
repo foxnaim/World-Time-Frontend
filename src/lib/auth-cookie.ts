@@ -1,5 +1,5 @@
 /**
- * Client-side cookie helpers for the WorkTime access/refresh tokens.
+ * Client-side cookie helpers for the Tact access/refresh tokens.
  *
  * Server code should read cookies via `next/headers`. These helpers are a
  * fallback for client components that need to attach a Bearer token.
@@ -83,7 +83,7 @@ export interface AuthTokenPair {
 
 /**
  * Write both access + refresh tokens from an /auth response payload.
- * Mirrors the backend contract defined in `@worktime/types`.
+ * Mirrors the backend contract defined in `@tact/types`.
  */
 export function setAuthCookies(pair: AuthTokenPair): void {
   writeAccessToken(pair.accessToken, pair.expiresIn ?? 60 * 60);

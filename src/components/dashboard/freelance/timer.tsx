@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import useSWR from 'swr';
-import { Button, Card, cn } from '@worktime/ui';
+import { Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { api } from '@/lib/api';
 import { useElapsed, formatElapsed } from '@/hooks/use-elapsed';

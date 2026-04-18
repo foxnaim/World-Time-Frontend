@@ -3,7 +3,7 @@
 import * as React from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
-import { Button, Card, cn } from '@worktime/ui';
+import { Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { Timer } from '@/components/dashboard/freelance/timer';
 import { ProjectCard } from '@/components/dashboard/freelance/project-card';

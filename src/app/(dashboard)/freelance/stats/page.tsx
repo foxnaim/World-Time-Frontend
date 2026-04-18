@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import useSWR from 'swr';
-import { Card } from '@worktime/ui';
+import { Card } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 
 interface Project {

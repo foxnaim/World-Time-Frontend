@@ -31,14 +31,15 @@ export default function AppleIcon() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'serif',
-            fontSize: 96,
-            fontWeight: 700,
+            fontFamily: "'Fraunces', 'Times New Roman', serif",
+            fontSize: 108,
+            fontWeight: 600,
             color: CREAM,
             lineHeight: 1,
+            letterSpacing: -3,
           }}
         >
-          W
+          T
         </div>
       </div>
     ),

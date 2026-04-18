@@ -1,5 +1,5 @@
 {
-  "name": "@worktime/web",
+  "name": "@tact/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@neshca/cache-handler": "^1.9.0",
-    "@worktime/types": "workspace:*",
-    "@worktime/ui": "workspace:*",
+    "@tact/types": "workspace:*",
+    "@tact/ui": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.11.0",

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, cn } from '@worktime/ui';
+import { Button, cn } from '@tact/ui';
 
 const NAV_LINKS = [
   { href: '#about', label: 'ABOUT US' },
@@ -22,9 +22,9 @@ export function Header() {
           href="/"
           className="text-stone text-2xl md:text-3xl tracking-tight rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-coral focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
           style={{ fontFamily: 'Fraunces, serif' }}
-          aria-label="WorkTime — на главную"
+          aria-label="Tact — на главную"
         >
-          WorkTime
+          Tact
         </Link>
 
         <nav

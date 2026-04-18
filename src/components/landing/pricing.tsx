@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { Button } from '@worktime/ui';
+import { Button } from '@tact/ui';
 import { Reveal } from './reveal';
 
 interface Tier {

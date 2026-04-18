@@ -11,7 +11,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // eslint-disable-next-line no-console
-    console.error('[WorkTime] route error:', error);
+    console.error('[Tact] route error:', error);
   }, [error]);
 
   return (

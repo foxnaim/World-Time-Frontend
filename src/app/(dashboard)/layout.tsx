@@ -244,7 +244,7 @@ export default function DashboardLayout({
             className="text-[#8E8D8A] hover:text-[#E98074] transition-colors tracking-tight text-lg"
             style={{ fontFamily: 'Fraunces, serif' }}
           >
-            WorkTime
+            Tact
           </Link>
         </div>
         <nav className="p-4 flex flex-col gap-1">

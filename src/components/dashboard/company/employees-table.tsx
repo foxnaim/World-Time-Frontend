@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, cn } from '@worktime/ui';
+import { Badge, cn } from '@tact/ui';
 
 export type Employee = {
   id: string;

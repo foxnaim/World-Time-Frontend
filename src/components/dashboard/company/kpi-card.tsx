@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, cn } from '@worktime/ui';
+import { Card, cn } from '@tact/ui';
 
 export interface KpiCardProps {
   eyebrow: string;

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
-import { Button, Card, cn } from '@worktime/ui';
+import { Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import {
   EmployeesTable,

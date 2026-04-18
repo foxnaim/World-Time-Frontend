@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Script from 'next/script';
-import { cn } from '@worktime/ui';
+import { cn } from '@tact/ui';
 
 export interface TelegramUser {
   id: number;

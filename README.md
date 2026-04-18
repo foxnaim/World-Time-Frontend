@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🎨 World-Time Frontend
+# 🎨 Tact — Frontend
 
-**Next.js 15 editorial UI for WorkTime — time tracking via Telegram and QR codes**
+**Next.js 15 editorial UI for Tact — time tracking via Telegram and QR codes**
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
@@ -19,7 +19,9 @@
 
 ## About
 
-World-Time Frontend is the editorial face of WorkTime — a time-tracking platform where employees check in through Telegram or rotating office QR codes instead of desktop timers. The UI takes its cues from Swiss typography and editorial design references like [exteta.com/locus-solus](https://exteta.com/locus-solus): a restrained cream/sand palette, a variable-weight serif for display, and generous whitespace that lets the product breathe. Motion is small, purposeful, and always respectful of `prefers-reduced-motion`.
+<sub>PRODUCT NAME: TACT · REPO: <code>World-Time-Frontend</code></sub>
+
+Tact Frontend is the editorial face of Tact — a time-tracking platform where employees check in through Telegram or rotating office QR codes instead of desktop timers. The UI takes its cues from Swiss typography and editorial design references like [exteta.com/locus-solus](https://exteta.com/locus-solus): a restrained cream/sand palette, a variable-weight serif for display, and generous whitespace that lets the product breathe. Motion is small, purposeful, and always respectful of `prefers-reduced-motion`.
 
 The centerpiece is the animated **Dial** component — a single SVG gauge that appears in three places: the marketing hero (as the product's signature mark), the office QR terminal (as a countdown to the next rotation), and the dashboard KPI cards (as progress indicators for hours, revenue, and utilization). The app ships Russian-first with an English fallback via cookie-based switching (no locale URL prefix), performs cryptographic JWT verification at the edge using `jose`, hydrates data with SWR, and installs as a PWA for office-terminal displays that need to survive flaky Wi-Fi and kiosk reboots.
 
@@ -103,7 +105,7 @@ The App Router is organized into four route groups plus a standalone terminal ro
 - **Fraunces** — serif, variable optical size, for display headings
 - **Inter** — sans, for UI and body
 
-**Shared components** from `@worktime/ui`: `Button`, `Card`, `Badge`, `Dial`, `Input`, `ScrollTick`.
+**Shared components** from `@tact/ui`: `Button`, `Card`, `Badge`, `Dial`, `Input`, `ScrollTick`.
 
 ## Project Structure
 
@@ -152,13 +154,13 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-> **Note:** this package depends on `@worktime/ui`, `@worktime/types`, and `@worktime/config` via `workspace:*`. To run standalone, either clone the full monorepo or inline those packages locally.
+> **Note:** this package depends on `@tact/ui`, `@tact/types`, and `@tact/config` via `workspace:*`. To run standalone, either clone the full monorepo or inline those packages locally.
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Base URL of the World-Time back-end API |
+| `NEXT_PUBLIC_API_URL` | Base URL of the Tact back-end API |
 | `NEXT_PUBLIC_APP_URL` | Canonical URL of this frontend (used for metadata, OG, sitemap) |
 | `NEXT_PUBLIC_BOT_USERNAME` | Telegram bot username (without `@`) for the Login Widget |
 | `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN for browser + edge error reporting |
@@ -183,7 +185,7 @@ Unit tests live next to the code under test (`*.test.ts`, `*.test.tsx`). Playwri
 ## Docker
 
 ```sh
-docker build -f Dockerfile -t worktime-frontend ..
+docker build -f Dockerfile -t tact-frontend ..
 # or use the monorepo docker compose
 ```
 

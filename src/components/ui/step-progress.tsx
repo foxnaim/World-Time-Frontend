@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@worktime/ui';
+import { cn } from '@tact/ui';
 
 export interface StepProgressProps {
   steps: string[];

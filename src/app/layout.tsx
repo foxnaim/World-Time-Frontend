@@ -20,35 +20,41 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
+  applicationName: 'Tact',
   title: {
-    default: 'WorkTime — учёт рабочего времени',
-    template: '%s — WorkTime',
+    default: 'Tact — учёт рабочего времени',
+    template: '%s · Tact',
   },
   description:
-    'WorkTime — современный сервис учёта рабочего времени для команд. Telegram-бот, офисный терминал и аналитика в едином редакционном интерфейсе.',
+    'Tact — экосистема учёта рабочего времени через Telegram и QR-коды. Ритм рабочего дня для B2B офисов и фрилансеров.',
   keywords: [
     'учёт рабочего времени',
     'тайм-трекинг',
-    'WorkTime',
+    'Tact',
     'Telegram бот',
     'HR',
     'аналитика команд',
   ],
-  authors: [{ name: 'WorkTime' }],
-  creator: 'WorkTime',
+  authors: [{ name: 'Tact' }],
+  creator: 'AOne Agency',
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
-    title: 'WorkTime — учёт рабочего времени',
+    title: 'Tact — учёт рабочего времени',
     description:
-      'Современный сервис учёта рабочего времени для команд: Telegram-бот, офисный терминал и редакционная аналитика.',
-    siteName: 'WorkTime',
+      'Tact — экосистема учёта рабочего времени через Telegram и QR-коды. Ритм рабочего дня для B2B офисов и фрилансеров.',
+    siteName: 'Tact',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WorkTime — учёт рабочего времени',
+    title: 'Tact — учёт рабочего времени',
     description:
-      'Современный сервис учёта рабочего времени для команд. Telegram-бот, офисный терминал и аналитика.',
+      'Tact — экосистема учёта рабочего времени через Telegram и QR-коды. Ритм рабочего дня для B2B офисов и фрилансеров.',
+  },
+  appleWebApp: {
+    title: 'Tact',
+    capable: true,
+    statusBarStyle: 'default',
   },
   icons: {
     icon: '/logo.svg',

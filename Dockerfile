@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# Production Dockerfile for @worktime/web (Next.js 15, app router)
+# Production Dockerfile for @tact/web (Next.js 15, app router)
 #
 # This image relies on Next.js standalone output. `frontend/next.config.ts`
 # must have `output: 'standalone'` enabled — without it, `.next/standalone`
@@ -59,7 +59,7 @@ ENV NODE_ENV=development
 
 EXPOSE 3000
 
-CMD ["pnpm","--filter","@worktime/web","dev"]
+CMD ["pnpm","--filter","@tact/web","dev"]
 
 ############################
 # Stage 2: deps
@@ -101,7 +101,7 @@ COPY frontend ./frontend
 COPY packages ./packages
 
 # Next.js standalone output is emitted to frontend/.next/standalone.
-RUN pnpm --filter @worktime/web build
+RUN pnpm --filter @tact/web build
 
 ############################
 # Stage 4: runtime
@@ -111,8 +111,8 @@ FROM node:${NODE_VERSION} AS runtime
 ARG GIT_COMMIT=unknown
 
 # OCI image metadata — populated at build time via --build-arg GIT_COMMIT=$(git rev-parse HEAD).
-LABEL org.opencontainers.image.title="worktime-frontend" \
-      org.opencontainers.image.description="WorkTime Next.js web client" \
+LABEL org.opencontainers.image.title="Tact Frontend" \
+      org.opencontainers.image.description="Tact — Next.js editorial UI" \
       org.opencontainers.image.revision="${GIT_COMMIT}" \
       org.opencontainers.image.source="https://github.com/foxnaim/World-Time-front-End" \
       org.opencontainers.image.licenses="MIT"

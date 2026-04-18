@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Button } from '@worktime/ui';
+import { Button } from '@tact/ui';
 import { CodeInput } from '@/components/ui/code-input';
 import { Modal } from '@/components/ui/modal';
 import { useToast } from '@/components/ui/use-toast';
@@ -33,7 +33,7 @@ export default function LoginPage() {
   return (
     <LoginView
       heading="Войти"
-      subtitle="Открой бота @worktime_bot → /auth → скопируй код"
+      subtitle="Открой бота @tact_bot → /auth → скопируй код"
       submitLabel="Войти"
     />
   );
@@ -44,7 +44,7 @@ export default function LoginPage() {
  */
 export function LoginView({
   heading = 'Войти',
-  subtitle = 'Открой бота @worktime_bot → /auth → скопируй код',
+  subtitle = 'Открой бота @tact_bot → /auth → скопируй код',
   submitLabel = 'Войти',
   redirectTo,
   widgetLinkLabel = 'Или войди через Telegram Login Widget',
@@ -131,7 +131,7 @@ export function LoginView({
       <div className="relative bg-cream/80 backdrop-blur-sm rounded-2xl border border-stone/20 shadow-[0_1px_0_rgba(142,141,138,0.08)] p-8 md:p-10">
         <div className="text-center mb-8">
           <p className="text-[10px] uppercase tracking-[0.28em] text-stone/60 mb-3">
-            WorkTime · Авторизация
+            Tact · Авторизация
           </p>
           <h1
             className="text-4xl md:text-5xl font-medium tracking-tight text-stone"

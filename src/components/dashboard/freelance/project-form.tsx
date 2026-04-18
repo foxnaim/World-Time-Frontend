@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, Input, cn } from '@worktime/ui';
+import { Button, Card, Input, cn } from '@tact/ui';
 import { api } from '@/lib/api';
 
 export type RateMode = 'hourly' | 'fixed';

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
-import { Button, Card } from '@worktime/ui';
+import { Button, Card } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 
 type CompanyDetail = { id: string; slug: string; name: string };

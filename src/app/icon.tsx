@@ -31,14 +31,15 @@ export default function Icon() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'serif',
-            fontSize: 18,
-            fontWeight: 700,
+            fontFamily: "'Fraunces', 'Times New Roman', serif",
+            fontSize: 20,
+            fontWeight: 600,
             color: CREAM,
             lineHeight: 1,
+            letterSpacing: -1,
           }}
         >
-          W
+          T
         </div>
       </div>
     ),

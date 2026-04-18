@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import useSWR from 'swr';
-import { cn } from '@worktime/ui';
+import { cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { ApiError } from '@/lib/api';
 
@@ -68,7 +68,7 @@ function Sidebar() {
           className="text-stone-800 hover:text-stone-600 transition-colors tracking-tight text-lg"
           style={{ fontFamily: 'Fraunces, serif' }}
         >
-          WorkTime
+          Tact
         </Link>
         <span className="ml-3 text-[10px] uppercase tracking-[0.28em] text-stone-500">
           admin

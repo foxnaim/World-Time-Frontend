@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Dial } from '@worktime/ui';
+import { Dial } from '@tact/ui';
 import { Clock } from './clock';
 import { QrCode } from './qr-code';
 import { useSse, type SseConnectionState } from './use-sse';
@@ -127,7 +127,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
       <section className="absolute inset-0 flex flex-col items-center justify-center px-6">
         <div className="flex flex-col items-center">
           <span className="editorial-eyebrow text-stone/70">
-            WorkTime · Checkpoint
+            Tact · Checkpoint
           </span>
           <h1
             className="mt-3 text-center text-6xl md:text-7xl lg:text-8xl leading-[0.95] text-[#2a2927]"
@@ -229,7 +229,7 @@ export function QrDisplay({ companyId, companyName }: QrDisplayProps) {
               className="text-xs uppercase tracking-[0.45em] text-[#2a2927]"
               style={{ fontWeight: 500 }}
             >
-              Worktime
+              Tact
             </span>
           </div>
         </div>

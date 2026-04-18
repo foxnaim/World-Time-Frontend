@@ -70,10 +70,10 @@ export default function AuthLayout({
             className="text-xl font-medium tracking-tight"
             style={{ fontFamily: 'Fraunces, serif' }}
           >
-            WorkTime
+            Tact
           </span>
           <span className="text-[10px] uppercase tracking-[0.28em] text-stone/60">
-            / учёт времени
+            / ритм рабочего дня
           </span>
         </Link>
       </header>
@@ -84,7 +84,7 @@ export default function AuthLayout({
 
       <footer className="relative z-10 px-6 pb-8 text-center">
         <p className="text-[10px] uppercase tracking-[0.28em] text-stone/50">
-          © {new Date().getFullYear()} WorkTime
+          © {new Date().getFullYear()} AOne Agency
         </p>
       </footer>
     </div>
