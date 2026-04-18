@@ -60,6 +60,18 @@ export const TelegramLogin: React.FC<TelegramLoginProps> = ({
   dataAuthUrl,
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isLocalhost, setIsLocalhost] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const h = window.location.hostname;
+    setIsLocalhost(
+      h === 'localhost' ||
+        h === '127.0.0.1' ||
+        h === '0.0.0.0' ||
+        h.endsWith('.local'),
+    );
+  }, []);
 
   // Attach callback to window so Telegram script can find it.
   React.useEffect(() => {
@@ -75,6 +87,7 @@ export const TelegramLogin: React.FC<TelegramLoginProps> = ({
   // Inject the Telegram widget script with proper data-attrs.
   React.useEffect(() => {
     if (!botUsername) return;
+    if (isLocalhost) return; // Telegram widget rejects localhost as data-auth domain
     const el = containerRef.current;
     if (!el) return;
     // Clear previous injections
@@ -103,7 +116,23 @@ export const TelegramLogin: React.FC<TelegramLoginProps> = ({
     return () => {
       el.innerHTML = '';
     };
-  }, [botUsername, size, cornerRadius, requestAccess, showUserPhoto, lang, dataAuthUrl]);
+  }, [botUsername, size, cornerRadius, requestAccess, showUserPhoto, lang, dataAuthUrl, isLocalhost]);
+
+  if (isLocalhost) {
+    return (
+      <div
+        className={cn(
+          'text-xs text-stone/70 text-center px-4 py-3 rounded-md border border-dashed border-stone/30 leading-relaxed',
+          className,
+        )}
+      >
+        Telegram Login Widget не работает на <code className="mx-1 text-coral">localhost</code>
+        (Telegram принимает только публичный домен через <code className="mx-1">/setdomain</code> в BotFather).
+        <br />
+        Используй 6-значный код из бота — это основной способ входа.
+      </div>
+    );
+  }
 
   if (!botUsername) {
     return (
