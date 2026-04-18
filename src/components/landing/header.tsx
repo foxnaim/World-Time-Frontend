@@ -9,8 +9,19 @@ const NAV_LINKS = [
   { href: '#contacts', label: 'CONTACTS' },
 ];
 
-export function Header() {
+export interface HeaderProps {
+  /**
+   * When true, the CTA points to /dashboard and reads «В Личный Кабинет».
+   * When false (default), it points to /login and reads «Войти».
+   * Determined by the parent server component via `getServerUser()`.
+   */
+  authenticated?: boolean;
+}
+
+export function Header({ authenticated = false }: HeaderProps = {}) {
   const [lang, setLang] = React.useState<'EN' | 'RU'>('RU');
+  const ctaHref = authenticated ? '/dashboard' : '/login';
+  const ctaLabel = authenticated ? 'В Личный Кабинет' : 'Войти';
 
   return (
     <header
@@ -75,7 +86,7 @@ export function Header() {
           </div>
 
           <Button variant="outline" size="sm" asChild>
-            <Link href="/login">Войти</Link>
+            <Link href={ctaHref}>{ctaLabel}</Link>
           </Button>
         </div>
       </div>
