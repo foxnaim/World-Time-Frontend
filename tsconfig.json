@@ -15,9 +15,8 @@
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./src/*"],
       "@worktime/ui": ["../packages/ui/src"],
       "@worktime/ui/*": ["../packages/ui/src/*"],
       "@worktime/types": ["../packages/types/src"],
