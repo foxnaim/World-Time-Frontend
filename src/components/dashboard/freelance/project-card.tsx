@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import useSWR from 'swr';
+import useSWR, { mutate as globalMutate } from 'swr';
 import { Badge, Button, Card, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { api } from '@/lib/api';
@@ -65,7 +65,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     setBusy(true);
     try {
       await api.post('/api/time-entries/start', { projectId: project.id });
-      await mutate();
+      await Promise.all([mutate(), globalMutate('/api/projects')]);
       setWarn(false);
     } finally {
       setBusy(false);
