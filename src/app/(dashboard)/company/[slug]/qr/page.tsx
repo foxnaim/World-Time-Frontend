@@ -8,6 +8,25 @@ import { fetcher } from '@/lib/fetcher';
 
 type CompanyDetail = { id: string; slug: string; name: string };
 
+/**
+ * Display key for the office terminal.
+ *
+ * The `/office/<companyId>/qr` endpoints are exempt from session auth
+ * (see `src/middleware.ts`), but the QR JSON + SSE stream require either
+ * an `X-Display-Key` header or a `?key=...` query param. Because an
+ * `<iframe>` and `EventSource` cannot attach custom headers, we pass the
+ * key via query string. Ops pre-seeds it at build time by setting
+ * `NEXT_PUBLIC_DISPLAY_KEY`; if unset, the preview/open-link will not
+ * carry a key and the office display will show an auth error — in which
+ * case we render a visible hint for the operator.
+ */
+const DISPLAY_KEY: string = process.env.NEXT_PUBLIC_DISPLAY_KEY ?? '';
+
+function buildOfficeUrl(id: string): string {
+  const base = `/office/${id}/qr`;
+  return DISPLAY_KEY ? `${base}?key=${encodeURIComponent(DISPLAY_KEY)}` : base;
+}
+
 export default function QrPage() {
   const params = useParams<{ slug: string }>();
   const slug = params?.slug;
@@ -18,7 +37,9 @@ export default function QrPage() {
   );
 
   const id = company?.id;
-  const officeUrl = id ? `/office/${id}/qr` : '#';
+  const officeUrl = id ? buildOfficeUrl(id) : '#';
+  const officeUrlDisplay = id ? `/office/${id}/qr` : '—';
+  const hasDisplayKey = DISPLAY_KEY.length > 0;
 
   return (
     <div className="flex flex-col gap-8">
@@ -36,6 +57,18 @@ export default function QrPage() {
           Откройте страницу на экране, установленном при входе. QR обновляется автоматически каждые
           60 секунд. Сотрудники сканируют его из Telegram-бота.
         </p>
+        {!hasDisplayKey && (
+          <div
+            role="status"
+            className="mt-4 max-w-xl rounded-md border border-[#E85A4F]/40 bg-[#E85A4F]/5 px-4 py-3 text-xs text-[#E85A4F] leading-relaxed"
+          >
+            <span className="uppercase tracking-[0.22em]">Ops note · </span>
+            переменная <code className="font-mono">NEXT_PUBLIC_DISPLAY_KEY</code> не задана —
+            превью и новая вкладка откроются без ключа и страница офиса покажет ошибку
+            авторизации. Задайте её в окружении фронтенда (тот же секрет, что на бэкенде как{' '}
+            <code className="font-mono">DISPLAY_KEY</code>) и пересоберите.
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[400px_1fr] items-start">
@@ -48,11 +81,17 @@ export default function QrPage() {
             ) : !id ? (
               <div className="absolute inset-0 animate-pulse bg-[#D8C3A5]/40" />
             ) : (
-              <iframe src={officeUrl} title="QR preview" className="w-full h-full bg-[#EAE7DC]" />
+              <iframe
+                src={officeUrl}
+                title="QR preview"
+                width={400}
+                height={400}
+                className="w-full h-full bg-[#EAE7DC] border-0"
+              />
             )}
           </div>
           <div className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/60">
-            Открыть на экране офиса
+            Превью экрана офиса
           </div>
         </Card>
 
@@ -75,7 +114,7 @@ export default function QrPage() {
               </li>
             ))}
           </ol>
-          <div className="mt-6 flex items-center gap-3">
+          <div className="mt-6 flex items-center gap-3 flex-wrap">
             <Button
               variant="primary"
               onClick={() => {
@@ -84,15 +123,17 @@ export default function QrPage() {
               }}
               disabled={!id}
             >
-              Открыть в новой вкладке
+              Открыть на экране офиса
             </Button>
             <a
               href={officeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs uppercase tracking-[0.22em] text-[#8E8D8A] hover:text-[#E98074] transition-colors"
+              title={hasDisplayKey ? 'Ссылка содержит display-key' : 'Без display-key'}
             >
-              {officeUrl}
+              {officeUrlDisplay}
+              {hasDisplayKey ? ' · key ✓' : ' · key ✗'}
             </a>
           </div>
         </Card>
