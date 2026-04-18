@@ -1,27 +1,65 @@
-'use client';
-
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import useSWR from 'swr';
-import { cn } from '@tact/ui';
-import { fetcher } from '@/lib/fetcher';
-import { ApiError } from '@/lib/api';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { AdminSidebar } from '@/components/admin/admin-sidebar';
 
-type AdminStats = {
-  users: number;
-  companies: number;
-  employees: number;
-  activeEmployees: number;
-  checkinsToday: number;
-  activeProjects: number;
-};
+/**
+ * Admin shell — server component.
+ *
+ * Gating strategy: probe the backend's `/admin/stats` endpoint with the
+ * caller's session cookie. The backend is the single source of truth for
+ * SUPER_ADMIN_TELEGRAM_IDS membership (via SuperAdminGuard), so we mirror
+ * its verdict:
+ *
+ *   - 2xx → user is a super-admin; render the admin chrome.
+ *   - 403 → authenticated but not in SUPER_ADMIN_TELEGRAM_IDS. Show a
+ *           polite «Нет доступа» page rather than a redirect — the user
+ *           arrived on purpose and deserves an explanation.
+ *   - 401 / missing session → middleware will already have redirected,
+ *           but we guard defensively by bouncing to /dashboard.
+ *   - network / 5xx → bounce to /dashboard; the admin UI is useless
+ *           without data and we'd rather not render a broken shell.
+ */
+const ACCESS_COOKIE = 'wt_access';
 
-const NAV = [
-  { href: '/admin', label: 'Обзор' },
-  { href: '/admin/companies', label: 'Компании' },
-  { href: '/admin/users', label: 'Пользователи' },
-] as const;
+function resolveApiBase(): string {
+  // Server-to-server call: prefer an internal URL when provided, falling
+  // back to the public one. The public URL may be a relative `/api` in
+  // dev — that won't work from the Node runtime, so we also accept an
+  // absolute fallback.
+  const internal = process.env.API_URL;
+  if (internal && internal.length > 0) return internal.replace(/\/$/, '');
+  const publicUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (publicUrl && /^https?:\/\//i.test(publicUrl)) return publicUrl.replace(/\/$/, '');
+  return 'http://localhost:8000';
+}
+
+async function probeAdminAccess(): Promise<'ok' | 'forbidden' | 'unauthorized' | 'error'> {
+  const store = await cookies();
+  const token = store.get(ACCESS_COOKIE)?.value;
+  if (!token) return 'unauthorized';
+
+  const base = resolveApiBase();
+  const url = `${base.endsWith('/api') ? base : `${base}/api`}/admin/stats`;
+
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    });
+    if (res.ok) return 'ok';
+    if (res.status === 403) return 'forbidden';
+    if (res.status === 401) return 'unauthorized';
+    return 'error';
+  } catch {
+    return 'error';
+  }
+}
 
 function NoAccess() {
   return (
@@ -43,88 +81,30 @@ function NoAccess() {
           .
         </p>
         <Link
-          href="/"
+          href="/dashboard"
           className="mt-8 inline-block text-xs uppercase tracking-[0.28em] text-stone-500 hover:text-stone-800 transition-colors"
         >
-          На главную
+          На дашборд
         </Link>
       </div>
     </div>
   );
 }
 
-function Sidebar() {
-  const pathname = usePathname();
-  return (
-    <aside
-      className="w-[240px] shrink-0 border-r border-stone-300/70 bg-stone-100"
-      aria-label="Admin navigation"
-    >
-      <div className="h-16 flex items-center px-6 border-b border-stone-300/70">
-        <Link
-          href="/admin"
-          className="text-stone-800 hover:text-stone-600 transition-colors tracking-tight text-lg"
-          style={{ fontFamily: 'Fraunces, serif' }}
-        >
-          Work Tact
-        </Link>
-        <span className="ml-3 text-[10px] uppercase tracking-[0.28em] text-stone-500">admin</span>
-      </div>
-      <nav className="p-4 flex flex-col gap-1">
-        {NAV.map((item) => {
-          const isActive =
-            pathname === item.href || (item.href !== '/admin' && pathname?.startsWith(item.href));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'px-3 py-2 rounded-sm text-sm tracking-tight transition-colors',
-                isActive
-                  ? 'bg-stone-200 text-stone-900'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60',
-              )}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-      <div className="mt-auto" />
-    </aside>
-  );
-}
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const verdict = await probeAdminAccess();
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  // Probe the admin API — a 403 means "not a super-admin". We use this as the
-  // single source of truth for whether to render the admin chrome or the
-  // no-access screen.
-  const { data, error, isLoading } = useSWR<AdminStats>('/admin/stats', fetcher, {
-    revalidateOnFocus: false,
-    shouldRetryOnError: false,
-  });
-
-  if (isLoading && !error) {
-    return (
-      <div className="min-h-screen bg-stone-200 text-stone-500 flex items-center justify-center">
-        <div className="text-[10px] uppercase tracking-[0.3em]">Загрузка…</div>
-      </div>
-    );
+  if (verdict === 'unauthorized' || verdict === 'error') {
+    redirect('/dashboard');
   }
 
-  if (error instanceof ApiError && error.status === 403) {
-    return <NoAccess />;
-  }
-  // Treat 401/other auth failures the same as no-access from this layout's
-  // perspective — the middleware will redirect if the session is actually
-  // missing; if we got here we're logged in but not authorized.
-  if (error && !data) {
+  if (verdict === 'forbidden') {
     return <NoAccess />;
   }
 
   return (
     <div className="min-h-screen bg-stone-200 text-stone-700 flex">
-      <Sidebar />
+      <AdminSidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 border-b border-stone-300/70 bg-stone-100/80 backdrop-blur px-8 flex items-center justify-between sticky top-0 z-20">
           <div
