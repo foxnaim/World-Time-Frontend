@@ -6,18 +6,25 @@ import useSWR from 'swr';
 import { Button, Card, Input, cn } from '@tact/ui';
 import { fetcher } from '@/lib/fetcher';
 import { api } from '@/lib/api';
+import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Shape returned by `GET /api/companies/:slug`. The backend resolves the
+ * membership and annotates `myRole` on the payload so the UI can gate owner
+ * features without a second round-trip.
+ */
 type CompanyDetail = {
   id: string;
   slug: string;
   name: string;
   address?: string | null;
-  lat?: number | null;
-  lng?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
   geofenceRadiusM?: number | null;
   workStartHour?: number | null;
   workEndHour?: number | null;
   timezone?: string | null;
+  myRole?: 'OWNER' | 'MANAGER' | 'EMPLOYEE' | string;
 };
 
 const TIMEZONES = [
@@ -30,33 +37,36 @@ const TIMEZONES = [
   'UTC',
 ];
 
+/** Convert integer hour (0–23) to `HH:00` for `<input type="time">`. */
 function hourToTimeStr(h: number | null | undefined): string {
   if (h == null || Number.isNaN(h)) return '';
-  const hh = Math.floor(h);
-  const mm = Math.round((h - hh) * 60);
-  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+  const hh = Math.max(0, Math.min(23, Math.floor(h)));
+  return `${String(hh).padStart(2, '0')}:00`;
 }
 
+/** Parse the `HH:MM` value back to an integer hour — backend wants int, not float. */
 function timeStrToHour(s: string): number | null {
   if (!s) return null;
-  const [hh, mm] = s.split(':').map((x) => parseInt(x, 10));
+  const [hh] = s.split(':').map((x) => parseInt(x, 10));
   if (Number.isNaN(hh)) return null;
-  return hh + (Number.isNaN(mm) ? 0 : mm / 60);
+  return Math.max(0, Math.min(23, hh));
 }
 
 export default function SettingsPage() {
   const params = useParams<{ slug: string }>();
   const slug = params?.slug;
-  const { data, mutate, error } = useSWR<CompanyDetail>(
-    slug ? `/api/companies/${slug}` : null,
-    fetcher,
-  );
+  const toast = useToast();
+
+  const swrKey = slug ? `/api/companies/${slug}` : null;
+  const { data, mutate, error, isLoading } = useSWR<CompanyDetail>(swrKey, fetcher);
 
   const [form, setForm] = React.useState<CompanyDetail | null>(null);
   const [saving, setSaving] = React.useState(false);
-  const [savedAt, setSavedAt] = React.useState<number | null>(null);
   const [saveErr, setSaveErr] = React.useState<string | null>(null);
 
+  // Populate the form once the server response lands. We intentionally only
+  // hydrate when the user hasn't started editing (form === null) so in-flight
+  // edits survive background revalidation.
   React.useEffect(() => {
     if (data && !form) {
       setForm(data);
@@ -76,11 +86,31 @@ export default function SettingsPage() {
     );
   }
 
-  if (!form) {
+  if (isLoading || !data || !form) {
     return (
       <div className="flex flex-col gap-6">
         <div className="h-16 w-64 rounded-md bg-[#D8C3A5]/40 animate-pulse" />
         <div className="h-96 w-full rounded-2xl bg-[#D8C3A5]/30 animate-pulse" />
+      </div>
+    );
+  }
+
+  // Role gate — only OWNER sees the settings form. MANAGER / EMPLOYEE get a
+  // "Нет доступа" screen even though the PATCH endpoint also admits MANAGER,
+  // because the product surface here is owner-only.
+  if (data.myRole !== 'OWNER') {
+    return (
+      <div className="py-24 text-center">
+        <div className="text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/70">Доступ</div>
+        <h1
+          className="mt-3 text-4xl tracking-tight text-[#8E8D8A]"
+          style={{ fontFamily: 'Fraunces, serif', fontWeight: 400 }}
+        >
+          Нет доступа
+        </h1>
+        <p className="mt-3 text-sm text-[#8E8D8A]/70">
+          Настройки компании доступны только владельцу.
+        </p>
       </div>
     );
   }
@@ -93,22 +123,34 @@ export default function SettingsPage() {
     setSaving(true);
     setSaveErr(null);
     try {
-      const payload = {
+      // Only send keys the UpdateCompanyDto schema accepts. Note backend uses
+      // `latitude`/`longitude` (not `lat`/`lng`) and integer `workStartHour` /
+      // `workEndHour` in 0–23.
+      const payload: Record<string, unknown> = {
         name: form.name,
-        address: form.address ?? null,
-        lat: form.lat ?? null,
-        lng: form.lng ?? null,
-        geofenceRadiusM: form.geofenceRadiusM ?? null,
-        workStartHour: form.workStartHour ?? null,
-        workEndHour: form.workEndHour ?? null,
-        timezone: form.timezone ?? null,
       };
+      if (form.address != null) payload.address = form.address;
+      if (form.latitude != null) payload.latitude = form.latitude;
+      if (form.longitude != null) payload.longitude = form.longitude;
+      if (form.geofenceRadiusM != null) payload.geofenceRadiusM = form.geofenceRadiusM;
+      if (form.workStartHour != null) payload.workStartHour = Math.floor(form.workStartHour);
+      if (form.workEndHour != null) payload.workEndHour = Math.floor(form.workEndHour);
+      if (form.timezone != null) payload.timezone = form.timezone;
+
       const updated = await api.patch<CompanyDetail>(`/api/companies/${form.id}`, payload);
-      setForm(updated);
-      mutate(updated, { revalidate: false });
-      setSavedAt(Date.now());
+      // Optimistically write the server response, then revalidate so the SWR
+      // cache reflects the authoritative state (including any fields the
+      // server normalized).
+      setForm((prev) => ({ ...(prev ?? updated), ...updated }));
+      await mutate(
+        (cur) => ({ ...(cur ?? updated), ...updated }),
+        { revalidate: true },
+      );
+      toast.success('Сохранено', { description: 'Настройки компании обновлены.' });
     } catch (err: unknown) {
-      setSaveErr(err instanceof Error ? err.message : 'Не удалось сохранить');
+      const msg = err instanceof Error ? err.message : 'Не удалось сохранить';
+      setSaveErr(msg);
+      toast.error('Ошибка сохранения', { description: msg });
     } finally {
       setSaving(false);
     }
@@ -129,11 +171,6 @@ export default function SettingsPage() {
           </h1>
         </div>
         <div className="flex items-center gap-3">
-          {savedAt && !saving && (
-            <span className="text-[10px] uppercase tracking-[0.22em] text-[#E98074]">
-              Сохранено
-            </span>
-          )}
           {saveErr && <span className="text-[11px] text-[#E85A4F]">{saveErr}</span>}
           <Button onClick={save} disabled={saving}>
             {saving ? 'Сохранение…' : 'Сохранить'}
@@ -151,7 +188,10 @@ export default function SettingsPage() {
           </label>
           <label className="flex flex-col gap-1.5">
             <span className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/70">Адрес</span>
-            <Input value={form.address ?? ''} onChange={(e) => update('address', e.target.value)} />
+            <Input
+              value={form.address ?? ''}
+              onChange={(e) => update('address', e.target.value || null)}
+            />
           </label>
         </div>
       </Card>
@@ -165,8 +205,10 @@ export default function SettingsPage() {
             <Input
               type="number"
               step="0.000001"
-              value={form.lat ?? ''}
-              onChange={(e) => update('lat', e.target.value ? Number(e.target.value) : null)}
+              value={form.latitude ?? ''}
+              onChange={(e) =>
+                update('latitude', e.target.value === '' ? null : Number(e.target.value))
+              }
               placeholder="43.238949"
             />
           </label>
@@ -177,8 +219,10 @@ export default function SettingsPage() {
             <Input
               type="number"
               step="0.000001"
-              value={form.lng ?? ''}
-              onChange={(e) => update('lng', e.target.value ? Number(e.target.value) : null)}
+              value={form.longitude ?? ''}
+              onChange={(e) =>
+                update('longitude', e.target.value === '' ? null : Number(e.target.value))
+              }
               placeholder="76.889709"
             />
           </label>
@@ -237,6 +281,7 @@ export default function SettingsPage() {
             </span>
             <Input
               type="time"
+              step={3600}
               value={hourToTimeStr(form.workStartHour)}
               onChange={(e) => update('workStartHour', timeStrToHour(e.target.value))}
             />
@@ -245,6 +290,7 @@ export default function SettingsPage() {
             <span className="text-[10px] uppercase tracking-[0.24em] text-[#8E8D8A]/70">Конец</span>
             <Input
               type="time"
+              step={3600}
               value={hourToTimeStr(form.workEndHour)}
               onChange={(e) => update('workEndHour', timeStrToHour(e.target.value))}
             />
