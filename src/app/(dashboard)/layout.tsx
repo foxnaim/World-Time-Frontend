@@ -45,7 +45,58 @@ type Me = {
   avatarUrl: string | null;
   employees?: MeEmployee[];
   subscriptions?: MeSubscription[];
+  /**
+   * Optional platform-level super-admin flag. The /auth/me endpoint is being
+   * extended to expose this; until it lands we probe /api/admin/stats as a
+   * fallback (see `useIsSuperAdmin` below).
+   */
+  isSuperAdmin?: boolean;
 };
+
+/**
+ * Resolve platform super-admin status for the sidebar gate.
+ *
+ * Resolution order:
+ *   1. `me.isSuperAdmin === true` — once /auth/me exposes the flag, this
+ *      short-circuits without any extra request.
+ *   2. Probe `/api/admin/stats` via SWR. The backend enforces the super-
+ *      admin gate on that route, so:
+ *        - 2xx → user is super-admin → show link
+ *        - 401/403 (or any error) → hide link (fail closed)
+ *      We use the probe because `/auth/me` does not yet expose
+ *      `isSuperAdmin`; that extension is in-flight. Once it lands the flag
+ *      path takes over with no network change.
+ *
+ * Note: company-level OWNER/ADMIN roles on `me.employees` are intentionally
+ * NOT treated as platform super-admin — the /admin area requires the
+ * platform-level role, which the backend checks regardless of the sidebar's
+ * decision.
+ */
+function useIsSuperAdmin(me: Me | undefined): boolean {
+  const flagFromMe = me?.isSuperAdmin === true;
+
+  // Only probe when we have a loaded `me` and the flag isn't already true.
+  // Gating on `me` avoids firing the probe before auth hydrates (which would
+  // otherwise produce a spurious 401 during initial load that we'd then
+  // have to debounce).
+  const shouldProbe = Boolean(me) && !flagFromMe;
+
+  const { data, error } = useSWR<unknown>(
+    shouldProbe ? '/api/admin/stats' : null,
+    fetcher,
+    {
+      // Admin status rarely changes within a session; avoid hammering the
+      // probe on every focus event.
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      shouldRetryOnError: false,
+    },
+  );
+
+  if (flagFromMe) return true;
+  if (error) return false; // 401/403/etc. → hide
+  return data !== undefined; // 2xx response → show
+}
 
 function formatDisplayName(me: Me | undefined): string {
   if (!me) return 'Аккаунт';
@@ -406,6 +457,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     isLoading: companiesLoading,
   } = useSWR<Company[]>('/api/companies/my', fetcher);
 
+  // `me` is already fetched inside `UserMenu`; SWR dedupes the key so this
+  // second hook reuses the same cache entry without an extra network call.
+  const { data: me } = useSWR<Me>('/api/auth/me', fetcher);
+  const isSuperAdmin = useIsSuperAdmin(me);
+
   const [month, setMonth] = React.useState<string>(() => {
     if (typeof window !== 'undefined') {
       const sp = new URLSearchParams(window.location.search);
@@ -528,6 +584,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             );
           })}
+          {isSuperAdmin && (
+            <>
+              <div className="px-3 pt-5 pb-2 text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/60">
+                Платформа
+              </div>
+              {(() => {
+                const isActive = pathname === '/admin' || pathname?.startsWith('/admin/');
+                return (
+                  <Link
+                    href="/admin"
+                    className={classNames(
+                      'px-3 py-2 rounded-md text-sm tracking-tight flex items-center justify-between',
+                      'transition-colors',
+                      isActive
+                        ? 'text-[#E98074] bg-[#E98074]/10'
+                        : 'text-[#8E8D8A] hover:text-[#E98074]',
+                    )}
+                  >
+                    <span>Admin</span>
+                    {isActive && <span className="w-1 h-1 rounded-full bg-[#E98074]" />}
+                  </Link>
+                );
+              })()}
+            </>
+          )}
         </nav>
         <div className="mt-auto px-6 py-5 border-t border-[#8E8D8A]/15 text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/40">
           v0.1 · editorial
