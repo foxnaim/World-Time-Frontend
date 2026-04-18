@@ -38,6 +38,7 @@ const PROTECTED_PREFIXES = [
   '/freelance',
   '/company',
   '/onboarding',
+  '/profile',
 ] as const;
 
 function isProtectedPath(pathname: string): boolean {
