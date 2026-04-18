@@ -16,7 +16,7 @@ export default function RegisterPage() {
   return (
     <LoginView
       heading="Зарегистрироваться"
-      subtitle="Открой бота @tact_bot → /auth → введи код здесь"
+      subtitle={`Открой бота @${process.env.NEXT_PUBLIC_BOT_USERNAME ?? 'worktact_bot'} → /auth → введи код здесь`}
       submitLabel="Войти через Telegram"
       redirectTo="/onboarding/company"
       widgetLinkLabel="Или войди через Telegram Login Widget"

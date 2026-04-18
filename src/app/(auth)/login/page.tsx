@@ -33,7 +33,7 @@ export default function LoginPage() {
   return (
     <LoginView
       heading="Войти"
-      subtitle="Открой бота @tact_bot → /auth → скопируй код"
+      subtitle={`Открой бота @${process.env.NEXT_PUBLIC_BOT_USERNAME ?? 'worktact_bot'} → /auth → скопируй код`}
       submitLabel="Войти"
     />
   );
@@ -44,7 +44,7 @@ export default function LoginPage() {
  */
 export function LoginView({
   heading = 'Войти',
-  subtitle = 'Открой бота @tact_bot → /auth → скопируй код',
+  subtitle = `Открой бота @${process.env.NEXT_PUBLIC_BOT_USERNAME ?? 'worktact_bot'} → /auth → скопируй код`,
   submitLabel = 'Войти',
   redirectTo,
   widgetLinkLabel = 'Или войди через Telegram Login Widget',

@@ -60,6 +60,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   transpilePackages: ['@tact/ui', '@tact/types'],
+  // Expose server-only secrets to middleware (edge runtime) without the
+  // `NEXT_PUBLIC_` prefix — so the value is NOT shipped to the browser.
+  env: {
+    JWT_PUBLIC_SECRET: process.env.JWT_PUBLIC_SECRET ?? '',
+  },
   ...(useRedisCache
     ? {
         cacheHandler: require.resolve('./cache-handler.mjs'),
