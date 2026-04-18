@@ -32,7 +32,13 @@ import { verifyAccessToken } from '@/lib/jwt-verify';
 const ACCESS_COOKIE = 'wt_access';
 const REFRESH_COOKIE = 'wt_refresh';
 
-const PROTECTED_PREFIXES = ['/dashboard', '/admin'] as const;
+const PROTECTED_PREFIXES = [
+  '/dashboard',
+  '/admin',
+  '/freelance',
+  '/company',
+  '/onboarding',
+] as const;
 
 function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
