@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Button, Card, Input, cn } from '@tact/ui';
 import { api } from '@/lib/api';
+import { QrCode } from '@/components/office/qr-code';
 
 export interface InviteModalProps {
   companyId: string;
@@ -11,10 +12,15 @@ export interface InviteModalProps {
   onInvited?: (result: InviteResult) => void;
 }
 
+/**
+ * Shape returned by `POST /api/companies/:id/employees/invite`.
+ * Mirrors backend `CompanyService.inviteEmployee`: the service issues a
+ * signed Telegram deep-link and we render it as-is (no client-side concat).
+ */
 type InviteResult = {
-  inviteId: string;
-  link: string;
-  botUsername?: string;
+  inviteLink: string;
+  token: string;
+  expiresAt: string;
 };
 
 type FormState = {
@@ -30,80 +36,6 @@ const initial: FormState = {
   monthlySalary: '',
   hourlyRate: '',
 };
-
-/**
- * Minimal inline QR renderer. Renders the `text` encoded as a dense black-and-white
- * SVG grid. This is a deterministic visual placeholder that works without any
- * external QR library; for production swap with a proper encoder.
- */
-function QRPreview({ text, size = 180 }: { text: string; size?: number }) {
-  const cells = 29;
-  const cell = size / cells;
-
-  const grid = React.useMemo(() => {
-    // Simple seeded hash → boolean grid. Recognizable as QR-ish pattern.
-    let h = 2166136261;
-    for (let i = 0; i < text.length; i++) {
-      h ^= text.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    const rnd = () => {
-      h ^= h << 13;
-      h ^= h >>> 17;
-      h ^= h << 5;
-      return ((h >>> 0) % 1000) / 1000;
-    };
-    const g: boolean[][] = [];
-    for (let y = 0; y < cells; y++) {
-      const row: boolean[] = [];
-      for (let x = 0; x < cells; x++) {
-        row.push(rnd() > 0.5);
-      }
-      g.push(row);
-    }
-    // Finder patterns at (0,0), (cells-7,0), (0,cells-7)
-    const stamp = (ox: number, oy: number) => {
-      for (let y = 0; y < 7; y++) {
-        for (let x = 0; x < 7; x++) {
-          const on =
-            x === 0 || y === 0 || x === 6 || y === 6 || (x >= 2 && x <= 4 && y >= 2 && y <= 4);
-          g[oy + y][ox + x] = on;
-        }
-      }
-    };
-    stamp(0, 0);
-    stamp(cells - 7, 0);
-    stamp(0, cells - 7);
-    return g;
-  }, [text]);
-
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      role="img"
-      aria-label="QR-код приглашения"
-      className="block"
-    >
-      <rect width={size} height={size} fill="#EAE7DC" />
-      {grid.map((row, y) =>
-        row.map((on, x) =>
-          on ? (
-            <rect
-              key={`${x}-${y}`}
-              x={x * cell}
-              y={y * cell}
-              width={cell}
-              height={cell}
-              fill="#8E8D8A"
-            />
-          ) : null,
-        ),
-      )}
-    </svg>
-  );
-}
 
 export function InviteModal({ companyId, open, onClose, onInvited }: InviteModalProps) {
   const [form, setForm] = React.useState<FormState>(initial);
@@ -142,9 +74,15 @@ export function InviteModal({ companyId, open, onClose, onInvited }: InviteModal
     setError(null);
     setSubmitting(true);
     try {
+      // `userTelegramId: '0'` satisfies a stale `InviteEmployeeDtoSchema.refine`
+      // that requires either `phone` or `userTelegramId`, even though the
+      // service never reads them — the invite is a one-time deep-link that
+      // binds to whoever consumes it. Remove once the backend schema drops
+      // the phone/telegramId refinement.
       const payload: Record<string, unknown> = {
         position: form.position || undefined,
         role: form.role,
+        userTelegramId: '0',
       };
       if (form.monthlySalary) payload.monthlySalary = Number(form.monthlySalary);
       if (form.hourlyRate) payload.hourlyRate = Number(form.hourlyRate);
@@ -165,7 +103,7 @@ export function InviteModal({ companyId, open, onClose, onInvited }: InviteModal
   const copyLink = async () => {
     if (!result) return;
     try {
-      await navigator.clipboard.writeText(result.link);
+      await navigator.clipboard.writeText(result.inviteLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -288,8 +226,8 @@ export function InviteModal({ companyId, open, onClose, onInvited }: InviteModal
           </form>
         ) : (
           <div className="px-7 py-6 flex flex-col gap-5 items-center">
-            <div className="rounded-xl border border-[#8E8D8A]/20 p-4 bg-[#EAE7DC]">
-              <QRPreview text={result.link} size={200} />
+            <div className="rounded-xl border border-[#8E8D8A]/20 p-3 bg-[#EAE7DC]">
+              <QrCode value={result.inviteLink} size={200} fgColor="#8E8D8A" bgColor="#EAE7DC" />
             </div>
             <div
               className="text-center text-sm text-[#8E8D8A] tracking-tight"
@@ -299,11 +237,14 @@ export function InviteModal({ companyId, open, onClose, onInvited }: InviteModal
             </div>
             <div className="w-full flex items-center gap-2">
               <div className="flex-1 border border-[#8E8D8A]/25 bg-[#D8C3A5]/20 rounded-full px-4 h-10 flex items-center text-sm text-[#8E8D8A] truncate">
-                {result.link}
+                {result.inviteLink}
               </div>
               <Button variant={copied ? 'outline' : 'primary'} type="button" onClick={copyLink}>
                 {copied ? 'Скопировано' : 'Копировать'}
               </Button>
+            </div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[#8E8D8A]/60">
+              Действительна до {new Date(result.expiresAt).toLocaleString('ru-RU')}
             </div>
             <div className="flex items-center justify-end w-full pt-2">
               <Button variant="ghost" type="button" onClick={onClose}>
