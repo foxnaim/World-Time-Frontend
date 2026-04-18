@@ -12,6 +12,37 @@ type Company = {
   name: string;
 };
 
+type Me = {
+  id: string;
+  telegramId: string;
+  firstName: string;
+  lastName: string | null;
+  username: string | null;
+  phone: string | null;
+  avatarUrl: string | null;
+};
+
+function formatDisplayName(me: Me | undefined): string {
+  if (!me) return 'Аккаунт';
+  const full = [me.firstName, me.lastName].filter(Boolean).join(' ').trim();
+  return full || me.username || 'Аккаунт';
+}
+
+function formatSecondary(me: Me | undefined): string {
+  if (!me) return '';
+  if (me.phone) return me.phone;
+  if (me.username) return `@${me.username}`;
+  return `id ${me.telegramId}`;
+}
+
+function formatInitials(me: Me | undefined): string {
+  if (!me) return 'AO';
+  const a = (me.firstName?.[0] ?? '').toUpperCase();
+  const b = (me.lastName?.[0] ?? me.username?.[0] ?? '').toUpperCase();
+  const combined = (a + b).slice(0, 2);
+  return combined || 'AO';
+}
+
 function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(' ');
 }
@@ -124,24 +155,45 @@ function CompanySwitcher({ companies, activeSlug }: { companies: Company[]; acti
 
 function UserMenu() {
   const [open, setOpen] = React.useState(false);
+  const { data: me } = useSWR<Me>('/api/auth/me', fetcher);
+  const displayName = formatDisplayName(me);
+  const secondary = formatSecondary(me);
+  const initials = formatInitials(me);
+  const buttonLabel = me?.username ? `@${me.username}` : 'Аккаунт';
   return (
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 h-9 pl-1 pr-3 rounded-full border border-[#8E8D8A]/30 hover:border-[#E98074]/50 hover:text-[#E98074] text-[#8E8D8A] transition-colors"
       >
-        <span className="w-7 h-7 rounded-full bg-[#D8C3A5] flex items-center justify-center text-[11px] tracking-wider text-[#8E8D8A]">
-          AO
+        {me?.avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={me.avatarUrl}
+            alt=""
+            className="w-7 h-7 rounded-full object-cover"
+          />
+        ) : (
+          <span className="w-7 h-7 rounded-full bg-[#D8C3A5] flex items-center justify-center text-[11px] tracking-wider text-[#8E8D8A]">
+            {initials}
+          </span>
+        )}
+        <span className="text-xs uppercase tracking-[0.22em] truncate max-w-[160px]">
+          {buttonLabel}
         </span>
-        <span className="text-xs uppercase tracking-[0.22em]">Аккаунт</span>
       </button>
       {open && (
         <div className="absolute right-0 top-11 z-30 w-60 border border-[#8E8D8A]/20 bg-[#EAE7DC] shadow-xl rounded-xl py-2 text-sm text-[#8E8D8A]">
           <div className="px-4 py-3 border-b border-[#8E8D8A]/15">
-            <div className="text-base tracking-tight" style={{ fontFamily: 'Fraunces, serif' }}>
-              Владелец
+            <div
+              className="text-base tracking-tight truncate"
+              style={{ fontFamily: 'Fraunces, serif' }}
+            >
+              {displayName}
             </div>
-            <div className="text-xs text-[#8E8D8A]/70 mt-0.5">info@aoneagency.kz</div>
+            {secondary && (
+              <div className="text-xs text-[#8E8D8A]/70 mt-0.5 truncate">{secondary}</div>
+            )}
           </div>
           <button className="w-full text-left px-4 py-2 hover:text-[#E98074]">Профиль</button>
           <button className="w-full text-left px-4 py-2 hover:text-[#E85A4F]">Выйти</button>
@@ -171,7 +223,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const _router = useRouter();
   const slug = params?.slug;
 
-  const { data: companies } = useSWR<Company[]>('/api/companies/my', fetcher);
+  const {
+    data: companies,
+    error: companiesError,
+    isLoading: companiesLoading,
+  } = useSWR<Company[]>('/api/companies/my', fetcher);
 
   const [month, setMonth] = React.useState<string>(() => {
     if (typeof window !== 'undefined') {
@@ -210,30 +266,66 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="px-3 py-2 text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/60">
             Компания
           </div>
-          {COMPANY_NAV.map((item) => {
-            const href = activeSlug ? `/company/${activeSlug}${item.href}` : '#';
-            const isActive =
-              !isFreelance &&
-              (pathname === href ||
-                (item.href === '' && pathname === `/company/${activeSlug}`) ||
-                (item.href !== '' && pathname?.startsWith(href)));
-            return (
+          {companiesError ? (
+            <div className="px-3 py-2 flex flex-col gap-2">
+              <p className="text-xs text-[#E85A4F]/90 leading-relaxed">
+                Не удалось загрузить список компаний.
+              </p>
               <Link
-                key={item.label}
-                href={href}
-                className={classNames(
-                  'px-3 py-2 rounded-md text-sm tracking-tight flex items-center justify-between',
-                  'transition-colors',
-                  isActive
-                    ? 'text-[#E98074] bg-[#E98074]/10'
-                    : 'text-[#8E8D8A] hover:text-[#E98074]',
-                )}
+                href="/onboarding/company"
+                className="inline-flex items-center justify-center px-3 py-2 text-xs uppercase tracking-[0.22em] rounded-md border border-[#E98074]/50 text-[#E98074] hover:bg-[#E98074]/10 transition-colors"
               >
-                <span>{item.label}</span>
-                {isActive && <span className="w-1 h-1 rounded-full bg-[#E98074]" />}
+                Создать компанию
               </Link>
-            );
-          })}
+            </div>
+          ) : !companiesLoading && companies && companies.length === 0 ? (
+            <div className="px-3 py-2 flex flex-col gap-2">
+              <p className="text-xs text-[#8E8D8A]/80 leading-relaxed">
+                У вас нет компаний.
+              </p>
+              <Link
+                href="/onboarding/company"
+                className="inline-flex items-center justify-center px-3 py-2 text-xs uppercase tracking-[0.22em] rounded-md border border-[#E98074]/50 text-[#E98074] hover:bg-[#E98074]/10 transition-colors"
+              >
+                Создать
+              </Link>
+            </div>
+          ) : (
+            COMPANY_NAV.map((item) => {
+              const disabled = !activeSlug;
+              const href = activeSlug ? `/company/${activeSlug}${item.href}` : '#';
+              const isActive =
+                !disabled &&
+                !isFreelance &&
+                (pathname === href ||
+                  (item.href === '' && pathname === `/company/${activeSlug}`) ||
+                  (item.href !== '' && pathname?.startsWith(href)));
+              return (
+                <Link
+                  key={item.label}
+                  href={href}
+                  aria-disabled={disabled || undefined}
+                  title={disabled ? 'Загрузка списка компаний…' : undefined}
+                  onClick={(e) => {
+                    if (disabled || href === '#') {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={classNames(
+                    'px-3 py-2 rounded-md text-sm tracking-tight flex items-center justify-between',
+                    'transition-colors',
+                    disabled && 'opacity-40 pointer-events-auto cursor-not-allowed',
+                    isActive
+                      ? 'text-[#E98074] bg-[#E98074]/10'
+                      : 'text-[#8E8D8A] hover:text-[#E98074]',
+                  )}
+                >
+                  <span>{item.label}</span>
+                  {isActive && <span className="w-1 h-1 rounded-full bg-[#E98074]" />}
+                </Link>
+              );
+            })
+          )}
           <div className="px-3 pt-5 pb-2 text-[10px] uppercase tracking-[0.28em] text-[#8E8D8A]/60">
             Фриланс
           </div>
