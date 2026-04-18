@@ -22,7 +22,6 @@ export function RegisterSw() {
       navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((err) => {
         // Swallow — a failed SW registration must never break the
         // office terminal. Log for diagnostics only.
-        // eslint-disable-next-line no-console
         console.warn('[worktime] service worker registration failed', err);
       });
     };

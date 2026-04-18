@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect } from 'react';
 
 export default function Error({
@@ -10,7 +11,6 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // eslint-disable-next-line no-console
     console.error('[Tact] route error:', error);
   }, [error]);
 
@@ -36,12 +36,12 @@ export default function Error({
           >
             Повторить
           </button>
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-2 px-5 py-3 hairline text-sm font-medium text-stone hover:text-red transition-colors"
           >
             На главную
-          </a>
+          </Link>
         </div>
       </div>
     </main>

@@ -23,7 +23,6 @@ const parsed = publicSchema.safeParse({
 });
 
 if (!parsed.success) {
-  // eslint-disable-next-line no-console
   console.error('[Tact] Invalid public env vars:', parsed.error.flatten().fieldErrors);
   throw new Error('Invalid public environment variables');
 }

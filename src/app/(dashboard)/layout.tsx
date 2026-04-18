@@ -168,7 +168,7 @@ const FREELANCE_NAV = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const params = useParams<{ slug?: string }>();
   const pathname = usePathname();
-  const router = useRouter();
+  const _router = useRouter();
   const slug = params?.slug;
 
   const { data: companies } = useSWR<Company[]>('/api/companies/my', fetcher);

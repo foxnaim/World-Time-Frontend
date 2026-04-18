@@ -129,7 +129,6 @@ export const CodeInput: React.FC<CodeInputProps> = ({
       <div
         role="group"
         aria-label={ariaLabel}
-        aria-invalid={error || undefined}
         aria-describedby={error && errorMessage ? errorId : undefined}
         className="flex items-center justify-center gap-2 md:gap-3"
       >
