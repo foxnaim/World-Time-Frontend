@@ -424,7 +424,10 @@ export class CompanyService {
       }
     }
 
-    await this.prisma.employee.delete({ where: { id: employeeId } });
+    await this.prisma.employee.update({
+      where: { id: employeeId },
+      data: { status: EmployeeStatus.INACTIVE },
+    });
 
     await this.audit.record({
       actorUserId: actorUserId,
