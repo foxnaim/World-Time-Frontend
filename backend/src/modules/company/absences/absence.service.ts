@@ -1,15 +1,34 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { EmployeeRole } from '@prisma/client';
+import { AbsenceType, EmployeeRole } from '@prisma/client';
 import { PrismaService } from '@/common/prisma.service';
+import { BotService } from '@/modules/telegram/bot.service';
 import type { CreateAbsenceDto } from './absence.dto';
+
+const ABSENCE_MESSAGES: Record<AbsenceType, (name: string, start: string, end: string) => string> = {
+  VACATION: (n, s, e) => `🏖 Приятного отдыха, ${n}! Отпуск утверждён: ${s} – ${e}.`,
+  SICK_LEAVE: (n, s, e) => `🤒 Выздоравливайте, ${n}! Больничный утверждён: ${s} – ${e}.`,
+  DAY_OFF: (n, s, e) => `😌 Хорошего отдыха, ${n}! Выходной утверждён: ${s === e ? s : `${s} – ${e}`}.`,
+  BUSINESS_TRIP: (n, s, e) => `✈️ Удачной командировки, ${n}! ${s} – ${e}.`,
+};
+
+function fmtDate(iso: string | Date): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
 @Injectable()
 export class AbsenceService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(AbsenceService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly bot: BotService,
+  ) {}
 
   /**
    * List all absences for a company, optionally filtered to a calendar month.
@@ -78,6 +97,7 @@ export class AbsenceService {
     // Verify the target employee belongs to this company.
     const employee = await this.prisma.employee.findFirst({
       where: { id: dto.employeeId, companyId },
+      include: { user: { select: { telegramId: true, firstName: true } } },
     });
     if (!employee) {
       throw new NotFoundException('Employee not found in this company');
@@ -93,6 +113,13 @@ export class AbsenceService {
         approvedById: userId,
       },
     });
+
+    // Fire-and-forget Telegram notification to the employee
+    const name = employee.user.firstName;
+    const msg = ABSENCE_MESSAGES[dto.type](name, fmtDate(dto.startDate), fmtDate(dto.endDate));
+    this.bot.notifyUser(employee.user.telegramId, msg).catch((e) =>
+      this.logger.warn(`absence notify failed: ${(e as Error).message}`),
+    );
 
     return { id: absence.id, ...dto, createdAt: absence.createdAt.toISOString() };
   }
