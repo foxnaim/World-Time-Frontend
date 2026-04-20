@@ -1,0 +1,35 @@
+# Prometheus scrape configuration for the WorkTime stack.
+# Loaded by the `prometheus` service in docker-compose.observability.yml.
+# Retention (30d) is configured via the CLI flag on the service.
+
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: worktime
+    env: dev
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: worktime-backend
+    metrics_path: /api/metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['backend:4000']
+        labels:
+          service: backend
+    # If METRICS_TOKEN is set in the backend, uncomment and mount a token file:
+    # authorization:
+    #   type: Bearer
+    #   credentials_file: /etc/prometheus/metrics-token
+
+  # Optional host metrics. Run node_exporter on the host or as a sidecar and
+  # uncomment this block.
+  - job_name: node_exporter
+    static_configs:
+      - targets: []
+        # - targets: ['node_exporter:9100']

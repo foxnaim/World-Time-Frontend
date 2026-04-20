@@ -1,0 +1,102 @@
+# Observability stack (Prometheus + Grafana + Loki + Promtail).
+#
+# Opt-in overlay. Launch alongside the main compose:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
+#
+# All services attach to the `observability` network (internal) and also to
+# `worktime_internal` (external) so Prometheus can reach the backend service
+# by DNS name (`backend:4000`). Create the external network first if it does
+# not exist:
+#
+#   docker network create worktime_internal
+#
+# Then start the main stack (which will join it) and this overlay.
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.0.0
+    container_name: worktime-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom_data:/prometheus
+    ports:
+      - '9090:9090'
+    networks:
+      - observability
+      - worktime_internal
+    labels:
+      logging: promtail
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: worktime-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - loki
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_ANALYTICS_REPORTING_ENABLED: 'false'
+      GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
+      GF_LOG_LEVEL: info
+    volumes:
+      - ./observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./observability/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./observability/grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      # 3001 on host -> 3000 in container; Next.js owns 3000 on the host.
+      - '3001:3000'
+    networks:
+      - observability
+    labels:
+      logging: promtail
+
+  loki:
+    image: grafana/loki:3.2.0
+    container_name: worktime-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./observability/loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki_data:/loki
+    ports:
+      - '3100:3100'
+    networks:
+      - observability
+    labels:
+      logging: promtail
+
+  promtail:
+    image: grafana/promtail:3.2.0
+    container_name: worktime-promtail
+    restart: unless-stopped
+    depends_on:
+      - loki
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - ./observability/promtail/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    networks:
+      - observability
+
+volumes:
+  prom_data:
+  grafana_data:
+  loki_data:
+
+networks:
+  observability:
+    driver: bridge
+  worktime_internal:
+    external: true

@@ -1,0 +1,53 @@
+services:
+  pgadmin:
+    image: dpage/pgadmin4:8.13
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@worktime.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - '5050:80'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis-insight:
+    image: redislabs/redisinsight:2.58
+    restart: unless-stopped
+    ports:
+      - '5540:5540'
+    volumes:
+      - redisinsight_data:/data
+      - ./docker/redisinsight/connections.json:/data/connections.json:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    restart: unless-stopped
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+  bullboard:
+    image: deadly0/bull-board:latest
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      BULL_PREFIX: bull
+    ports:
+      - '3002:3000'
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgadmin_data:
+  redisinsight_data:

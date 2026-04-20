@@ -1,0 +1,270 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-cream: #EAE7DC;
+  --color-sand: #D8C3A5;
+  --color-stone: #8E8D8A;
+  --color-coral: #E98074;
+  --color-red: #E85A4F;
+
+  --hairline: rgba(142, 141, 138, 0.4);
+  --hairline-soft: rgba(142, 141, 138, 0.2);
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: #3a3936;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  ::selection {
+    background-color: rgba(233, 128, 116, 0.3);
+    color: #2a2927;
+  }
+
+  ::-moz-selection {
+    background-color: rgba(233, 128, 116, 0.3);
+    color: #2a2927;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-weight: 500;
+    color: #2a2927;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(142, 141, 138, 0.3);
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(142, 141, 138, 0.5);
+  }
+}
+
+@layer components {
+  .editorial-heading {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    font-feature-settings: 'ss01', 'liga', 'dlig';
+    font-variation-settings: 'opsz' 144;
+    color: #2a2927;
+  }
+
+  .editorial-eyebrow {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-stone);
+  }
+
+  .editorial-body {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.65;
+    color: #4a4945;
+  }
+
+  .hairline-border {
+    border: 1px solid var(--hairline);
+  }
+
+  .grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .anim-fade-up {
+    animation: fadeUp 0.6s var(--ease-editorial) both;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* --------------------------------------------------------------------
+   * Accessibility utilities
+   * ------------------------------------------------------------------ */
+
+  /* Canonical sr-only pattern — works without Tailwind's sr-only plugin */
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .not-sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+  }
+
+  /* Coral focus ring — use for interactive coral affordances */
+  .focus-ring-coral {
+    outline: none;
+  }
+  .focus-ring-coral:focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 2px;
+    border-radius: 4px;
+    box-shadow: 0 0 0 4px rgba(233, 128, 116, 0.25);
+  }
+}
+
+/* ----------------------------------------------------------------------
+ * Selection: coral tint for clearer contrast on cream
+ * -------------------------------------------------------------------- */
+::selection {
+  background-color: rgba(232, 90, 79, 0.35);
+  color: #1f1e1c;
+}
+::-moz-selection {
+  background-color: rgba(232, 90, 79, 0.35);
+  color: #1f1e1c;
+}
+
+/* ----------------------------------------------------------------------
+ * Reduced motion — honour OS preference
+ * Disables framer-motion transitions, scroll-smoothing, and CSS animations.
+ * -------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  /* framer-motion respects this when transition: { duration } is not forced */
+  [data-framer-motion],
+  [data-motion] {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ----------------------------------------------------------------------
+ * Forced-colors / high-contrast — strengthen editorial hairlines from
+ * stone/20 ghosting to stone/60 so borders are actually visible.
+ * -------------------------------------------------------------------- */
+@media (prefers-contrast: more) {
+  :root {
+    --hairline: rgba(142, 141, 138, 0.9);
+    --hairline-soft: rgba(142, 141, 138, 0.6);
+  }
+
+  .border-stone\/10,
+  .border-stone\/20,
+  .border-stone\/25,
+  .border-stone\/30 {
+    border-color: rgba(142, 141, 138, 0.75) !important;
+  }
+
+  .text-stone\/50,
+  .text-stone\/60,
+  .text-stone\/70 {
+    color: #4a4945 !important;
+  }
+
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}

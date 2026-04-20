@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@tact/database": ["./packages/database/src"],
+      "@tact/types": ["./packages/types/src"],
+      "@tact/ui": ["./packages/ui/src"],
+      "@tact/config/*": ["./packages/config/*"]
+    }
+  }
+}

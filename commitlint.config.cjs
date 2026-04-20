@@ -1,0 +1,30 @@
+module.exports = {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'scope-enum': [
+      2,
+      'always',
+      [
+        'backend',
+        'frontend',
+        'db',
+        'types',
+        'ui',
+        'config',
+        'ci',
+        'docs',
+        'deps',
+        'telegram',
+        'admin',
+        'billing',
+        'report',
+        'auth',
+        'dashboard',
+        'landing',
+        'office',
+      ],
+    ],
+    'subject-case': [0],
+    'body-max-line-length': [0],
+  },
+};

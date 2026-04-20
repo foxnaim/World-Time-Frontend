@@ -1,0 +1,87 @@
+# Development overrides — picked up automatically by `docker compose up`.
+#
+# The base docker-compose.yml only brings up the data-layer stack
+# (postgres + redis, plus optional pgAdmin / redis-commander under the
+# `tools` profile). This override adds app services behind Compose
+# profiles so the default `docker compose up -d` keeps starting just
+# infra.
+#
+# Usage:
+#   docker compose up -d                 # postgres + redis only (infra)
+#   docker compose --profile dev up      # + backend-dev + frontend-dev
+#   docker compose --profile bot up      # + bot-inspect (--inspect-brk on :9230)
+#   docker compose --profile tools up    # + pgAdmin + redis-commander
+#
+# Source is bind-mounted for hot reload; node_modules stays inside the
+# container via an anonymous volume so host OS / arch mismatches don't
+# leak in. Debug ports: backend 9229, bot 9230.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: '10m'
+    max-file: '3'
+
+services:
+  postgres:
+    logging: *default-logging
+
+  redis:
+    logging: *default-logging
+
+  backend-dev:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: dev
+    command: pnpm --filter @tact/api dev
+    env_file:
+      - .env
+    volumes:
+      - ./backend/src:/repo/backend/src:cached
+      - ./packages:/repo/packages:cached
+      - /repo/node_modules
+    ports:
+      - '4000:4000'
+      - '9229:9229'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - dev
+    logging: *default-logging
+
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: dev
+    command: pnpm --filter @tact/web dev
+    volumes:
+      - ./frontend/src:/repo/frontend/src:cached
+      - ./frontend/public:/repo/frontend/public:cached
+      - ./packages:/repo/packages:cached
+      - /repo/node_modules
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend-dev
+    restart: unless-stopped
+    profiles:
+      - dev
+    logging: *default-logging
+
+  bot-inspect:
+    extends:
+      service: backend-dev
+    command: pnpm --filter @tact/api bot
+    environment:
+      NODE_OPTIONS: '--inspect-brk=0.0.0.0:9230'
+    ports:
+      - '9230:9230'
+    profiles:
+      - bot
+    logging: *default-logging

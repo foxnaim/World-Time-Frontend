@@ -1,0 +1,104 @@
+# Work Tact — dev-ready infrastructure stack.
+#
+# `docker compose up -d` brings up postgres + redis with healthchecks
+# and init scripts. Pass `--profile tools` to also start pgAdmin and
+# redis-commander for GUI access. App services (backend, frontend,
+# bot, migrator, observability) live in sibling compose files and
+# override files, not here — this file is strictly the data-layer
+# stack so it stays trivial to reason about and reset.
+#
+# Usage:
+#   docker compose up -d                    # postgres + redis
+#   docker compose --profile tools up -d    # + pgAdmin + redis-commander
+#   docker compose down -v                  # wipe volumes (first-init scripts re-run)
+#
+# See docker/README.md for connection strings and troubleshooting.
+
+name: worktime
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: worktime-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-worktime}
+      POSTGRES_USER: ${POSTGRES_USER:-worktime}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-worktime}
+      POSTGRES_INITDB_ARGS: '--data-checksums'
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U $${POSTGRES_USER:-worktime} -d $${POSTGRES_DB:-worktime}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: worktime-redis
+    restart: unless-stopped
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: worktime-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@worktime.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - '5050:80'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: worktime-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - '8081:8081'
+    depends_on:
+      redis:
+        condition: service_healthy
+    profiles:
+      - tools
+
+networks:
+  default:
+    name: worktime
+    driver: bridge
+
+volumes:
+  pg_data:
+    name: worktime_pg_data
+  redis_data:
+    name: worktime_redis_data
+  pgadmin_data:
+    name: worktime_pgadmin_data

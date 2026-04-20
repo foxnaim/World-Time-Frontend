@@ -1,0 +1,300 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                     String                  @id @default(cuid())
+  telegramId             BigInt                  @unique
+  phone                  String?
+  firstName              String
+  lastName               String?
+  username               String?
+  avatarUrl              String?
+  email                  String?
+  accountType            UserAccountType?
+  isSuperAdmin           Boolean                 @default(false)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  employees              Employee[]
+  ownedCompanies         Company[]
+  projects               Project[]
+  freelancerSubscription FreelancerSubscription?
+}
+
+enum UserAccountType {
+  FREELANCER
+  COMPANY
+}
+
+model Company {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique
+  owner           User          @relation(fields: [ownerId], references: [id])
+  ownerId         String
+  address         String?
+  latitude        Float?
+  longitude       Float?
+  geofenceRadiusM Int           @default(150)
+  timezone        String        @default("Asia/Almaty")
+  workStartHour   Int           @default(9)
+  workEndHour     Int           @default(18)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  employees       Employee[]
+  qrTokens        QRToken[]
+  inviteTokens    InviteToken[]
+  subscription    Subscription?
+  departments     Department[]
+  locations       Location[]
+  shifts          Shift[]
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  company            Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId          String             @unique
+  tier               SubscriptionTier   @default(FREE)
+  status             SubscriptionStatus @default(ACTIVE)
+  seatsLimit         Int                @default(5)
+  currentPeriodStart DateTime           @default(now())
+  currentPeriodEnd   DateTime
+  externalId         String? // Stripe/YooKassa subscription ID
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+enum SubscriptionTier {
+  FREE
+  TEAM
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
+// Freelancer-side subscription (separate from company-side `Subscription` so
+// limits, prices, and the 1:1 key differ cleanly). A freelancer is a single
+// user with personal projects — pricing here is flat per user, not per seat.
+model FreelancerSubscription {
+  id                 String             @id @default(cuid())
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String             @unique
+  tier               FreelancerTier     @default(FREE)
+  status             SubscriptionStatus @default(ACTIVE)
+  projectLimit       Int                @default(3)
+  currentPeriodStart DateTime           @default(now())
+  currentPeriodEnd   DateTime
+  externalId         String? // Stripe/YooKassa subscription ID
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+enum FreelancerTier {
+  FREE
+  SOLO
+  PRO
+}
+
+model Employee {
+  id            String         @id @default(cuid())
+  user          User           @relation(fields: [userId], references: [id])
+  userId        String
+  company       Company        @relation(fields: [companyId], references: [id])
+  companyId     String
+  position      String?
+  monthlySalary Decimal?       @db.Decimal(12, 2)
+  hourlyRate    Decimal?       @db.Decimal(10, 2)
+  status        EmployeeStatus @default(ACTIVE)
+  role          EmployeeRole   @default(STAFF)
+  createdAt     DateTime       @default(now())
+  checkIns      CheckIn[]
+  departmentId  String?
+  department    Department?    @relation(fields: [departmentId], references: [id])
+  shiftId       String?
+  shift         Shift?         @relation(fields: [shiftId], references: [id])
+  absences      Absence[]
+
+  @@unique([userId, companyId])
+  @@index([companyId])
+}
+
+model CheckIn {
+  id         String      @id @default(cuid())
+  employee   Employee    @relation(fields: [employeeId], references: [id])
+  employeeId String
+  type       CheckInType
+  timestamp  DateTime    @default(now())
+  latitude   Float?
+  longitude  Float?
+  tokenId    String?
+
+  @@index([employeeId, timestamp])
+}
+
+model QRToken {
+  id               String   @id @default(cuid())
+  company          Company  @relation(fields: [companyId], references: [id])
+  companyId        String
+  token            String   @unique
+  expiresAt        DateTime
+  usedByEmployeeId String?
+  usedAt           DateTime?
+  createdAt        DateTime @default(now())
+
+  @@index([companyId, expiresAt])
+}
+
+model InviteToken {
+  id               String       @id @default(cuid())
+  token            String       @unique
+  company          Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId        String
+  role             EmployeeRole @default(STAFF)
+  position         String?
+  monthlySalary    Decimal?     @db.Decimal(12, 2)
+  hourlyRate       Decimal?     @db.Decimal(10, 2)
+  invitedByUserId  String
+  consumedByUserId String?
+  consumedAt       DateTime?
+  expiresAt        DateTime
+  createdAt        DateTime     @default(now())
+
+  @@index([companyId])
+  @@index([expiresAt])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  user        User          @relation(fields: [userId], references: [id])
+  userId      String
+  name        String
+  description String?
+  hourlyRate  Decimal?      @db.Decimal(10, 2)
+  fixedPrice  Decimal?      @db.Decimal(12, 2)
+  currency    String        @default("RUB")
+  status      ProjectStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  entries     TimeEntry[]
+}
+
+model TimeEntry {
+  id          String    @id @default(cuid())
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  startedAt   DateTime
+  endedAt     DateTime?
+  durationSec Int?
+  note        String?
+  createdAt   DateTime  @default(now())
+
+  @@index([projectId])
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum EmployeeRole {
+  OWNER
+  MANAGER
+  STAFF
+}
+
+enum CheckInType {
+  IN
+  OUT
+}
+
+enum ProjectStatus {
+  ACTIVE
+  DONE
+  ARCHIVED
+}
+
+/// Append-only audit trail. System actions (no actor) and cross-company events
+/// keep their FKs nullable so we can still record deletions without cascading.
+model AuditEntry {
+  id           String   @id @default(cuid())
+  actorUserId  String?
+  companyId    String?
+  action       String
+  targetType   String
+  targetId     String?
+  metadata     Json
+  createdAt    DateTime @default(now())
+
+  @@index([companyId, createdAt])
+  @@index([actorUserId, createdAt])
+}
+
+model Department {
+  id        String     @id @default(cuid())
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  name      String
+  employees Employee[]
+  createdAt DateTime   @default(now())
+
+  @@index([companyId])
+}
+
+model Location {
+  id              String   @id @default(cuid())
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId       String
+  name            String
+  address         String?
+  latitude        Float
+  longitude       Float
+  geofenceRadiusM Int      @default(150)
+  createdAt       DateTime @default(now())
+
+  @@index([companyId])
+}
+
+model Shift {
+  id        String     @id @default(cuid())
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  name      String
+  startHour Int
+  endHour   Int
+  employees Employee[]
+  createdAt DateTime   @default(now())
+
+  @@index([companyId])
+}
+
+model Absence {
+  id           String      @id @default(cuid())
+  employee     Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId   String
+  type         AbsenceType
+  startDate    DateTime
+  endDate      DateTime
+  note         String?
+  approvedById String?
+  createdAt    DateTime    @default(now())
+
+  @@index([employeeId])
+  @@index([employeeId, startDate])
+}
+
+enum AbsenceType {
+  VACATION
+  SICK_LEAVE
+  DAY_OFF
+  BUSINESS_TRIP
+}

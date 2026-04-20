@@ -1,0 +1,37 @@
+# WorkTime production reverse proxy.
+#
+# Replace `yourdomain.com` with your real apex domain before deploying.
+# Auto TLS: Caddy provisions and renews Let's Encrypt certificates
+# automatically as long as ports 80 and 443 are reachable from the public
+# internet and DNS A/AAAA records point at this host. Set an email below
+# (or via CADDY_EMAIL env) to receive expiry notices.
+#
+# To test locally without TLS, swap `yourdomain.com` for `:80` and
+# `api.yourdomain.com` for `:8080`.
+
+{
+	# email admin@yourdomain.com
+	# Uncomment the next line while testing to avoid hitting LE rate limits:
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+(common) {
+	encode gzip zstd
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+yourdomain.com {
+	import common
+	reverse_proxy frontend:3000
+}
+
+api.yourdomain.com {
+	import common
+	reverse_proxy backend:4000
+}

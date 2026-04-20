@@ -1,0 +1,14 @@
+[
+  {
+    "id": "worktime-redis",
+    "name": "WorkTime Redis",
+    "host": "redis",
+    "port": 6379,
+    "username": "",
+    "password": "",
+    "tls": false,
+    "db": 0,
+    "connectionType": "STANDALONE",
+    "provider": "LOCALHOST"
+  }
+]
