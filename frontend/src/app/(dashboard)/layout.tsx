@@ -595,16 +595,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const [month, setMonth] = React.useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      const sp = new URLSearchParams(window.location.search);
-      return sp.get('month') || currentYearMonth();
-    }
-    return currentYearMonth();
-  });
+  const [month, setMonth] = React.useState<string>(currentYearMonth);
+
+  // Sync month from URL on mount (after hydration), then keep URL in sync
+  React.useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const m = sp.get('month');
+    if (m && m !== month) setMonth(m);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useEffect(() => {
-    if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
     url.searchParams.set('month', month);
     window.history.replaceState({}, '', url);
