@@ -254,7 +254,7 @@ export class CompanyService {
     const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
 
     const employees = await this.prisma.employee.findMany({
-      where: { companyId, role: { not: EmployeeRole.OWNER } },
+      where: { companyId, role: { not: EmployeeRole.OWNER }, status: EmployeeStatus.ACTIVE },
       include: {
         user: {
           select: {
